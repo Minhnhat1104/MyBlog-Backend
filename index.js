@@ -26,7 +26,7 @@ app.use(express.json());
 app.use("/v1/auth", authRouter);
 app.use("/v1/image", imageRouter);
 
-app.listen(8000, (err) => {
+app.listen(process.env.PORT || 8000, (err) => {
   if (err) {
     console.log(err);
   } else {
