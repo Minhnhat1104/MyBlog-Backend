@@ -9,7 +9,7 @@ import { default as imageRouter } from "./routes/image.js";
 dotenv.config();
 const app = express();
 
-app.use(express.static("public"));
+// app.use(express.static("public"));
 
 const connectDB = async () => {
   await mongoose.connect(process.env.CONNECTION_STRING, () => {
@@ -26,10 +26,12 @@ app.use(express.json());
 app.use("/v1/auth", authRouter);
 app.use("/v1/image", imageRouter);
 
-app.listen(process.env.PORT || 8000, (err) => {
+const port = process.env.PORT || 8000;
+
+app.listen(port, (err) => {
   if (err) {
     console.log(err);
   } else {
-    console.log("server is running");
+    console.log(`server is running at ${port}`);
   }
 });
