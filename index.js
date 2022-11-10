@@ -9,7 +9,7 @@ import { default as imageRouter } from "./routes/image.js";
 dotenv.config();
 const app = express();
 
-// app.use(express.static("public"));
+app.use(express.static("public"));
 
 const connectDB = async () => {
   await mongoose.connect(process.env.CONNECTION_STRING, () => {
