@@ -4,8 +4,7 @@ import middlewareController from "../controllers/middlewareController.js";
 
 const router = express.Router();
 
-router.get("/", imageController.getAllImage);
-// router.get("/", middlewareController.verifyToken, imageController.getAllImage);
+router.get("/", middlewareController.verifyToken, imageController.getAllImage);
 
 router.get(
   "/:id",
