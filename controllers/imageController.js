@@ -44,7 +44,32 @@ const imageController = {
 
   getAllImage: async (req, res) => {
     try {
+      if (req.query.initial_num && req.query.per_page && req.query.page) {
+        console.log("navigate image per page");
+        return await imageController.getImagePerPage(req, res);
+      }
       const images = await Image.find();
+      res.status(200).json(images);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
+
+  getImagePerPage: async (req, res) => {
+    try {
+      const initalNum = Number(req.query.initial_num);
+      const perPage = Number(req.query.per_page);
+      const page = Number(req.query.page);
+      console.log(initalNum, perPage, page);
+      let skipNum = initalNum + perPage * (page - 1);
+      let getNum = perPage;
+      if (page === 0) {
+        skipNum = 0;
+        getNum = initalNum;
+      }
+      console.log(skipNum, getNum);
+      const images = await Image.find().limit(getNum).skip(skipNum);
+      console.log(images.length);
       res.status(200).json(images);
     } catch (err) {
       res.status(500).json(err);
