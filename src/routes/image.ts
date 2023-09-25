@@ -1,10 +1,11 @@
 import express from "express";
-import imageController from "../controllers/imageController.js";
-import middlewareController from "../controllers/middlewareController.js";
+import imageController from "../controllers/imageController.ts";
+import middlewareController from "../controllers/middlewareController.ts";
 
 const router = express.Router();
 
-router.get("/", middlewareController.verifyToken, imageController.getAllImage);
+// router.get("/", middlewareController.verifyToken, imageController.getAllImage);
+router.get("/", imageController.getAllImage);
 
 router.get(
   "/:id",

@@ -1,6 +1,6 @@
-import Image from "../models/image.js";
+import Image from "../models/image.ts";
 import multer from "multer";
-import fs from "fs";
+// import fs from "fs";
 
 const Storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -24,7 +24,7 @@ const imageController = {
         const newImage = new Image({
           name: req.body.name,
           image: {
-            data: fs.readFileSync("uploads/" + req.file.filename),
+            // data: fs.readFileSync("uploads/" + req.file.filename),
             contentType: "image/png",
           },
           description: req.body.description,

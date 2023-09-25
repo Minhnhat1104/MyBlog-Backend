@@ -3,8 +3,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
-import { default as authRouter } from "./routes/auth.js";
-import { default as imageRouter } from "./routes/image.js";
+import { default as authRouter } from "./src/routes/auth";
+import { default as imageRouter } from "./src/routes/image";
 
 dotenv.config();
 const app = express();
@@ -12,7 +12,7 @@ const app = express();
 app.use(express.static("public"));
 
 const connectDB = async () => {
-  await mongoose.connect(process.env.CONNECTION_STRING, () => {
+  await mongoose.connect(process.env.CONNECTION_STRING || "", () => {
     console.log("Connected to database!");
   });
 };

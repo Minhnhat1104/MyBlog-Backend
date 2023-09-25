@@ -1,4 +1,4 @@
-import User from "../models/User.js";
+import User from "../models/User.ts";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -47,7 +47,7 @@ const authController = {
 
   loginUser: async (req, res) => {
     try {
-      const user = await User.findOne({ username: req.body.username });
+      const user: any = await User.findOne({ username: req.body.username });
       if (!user) {
         return res.status(404).json("Wrong username");
       }
@@ -67,7 +67,7 @@ const authController = {
         path: "/",
         sameSite: "strict",
       });
-      const { password, ...other } = user._doc;
+      const { password, ...other } = user?._doc;
       res.status(200).json({ ...other, accessToken: accessToken });
     } catch (err) {
       res.status(500).json(err);
