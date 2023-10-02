@@ -1,5 +1,5 @@
 import express from "express";
-import imageController from "../controllers/imageController.ts";
+import imageController, { upload } from "../controllers/imageController.ts";
 import middlewareController from "../controllers/middlewareController.ts";
 
 const router = express.Router();
@@ -9,23 +9,24 @@ router.get("/", imageController.getAllImage);
 
 router.get(
   "/:id",
-  middlewareController.verifyToken,
+  // middlewareController.verifyToken,
   imageController.getImageById
 );
 
 router.patch(
   "/update/:id",
-  middlewareController.verifyToken,
+  // middlewareController.verifyToken,
   imageController.updateImage
 );
 router.post(
   "/upload",
-  middlewareController.verifyToken,
+  // middlewareController.verifyToken,
+  upload,
   imageController.uploadImage
 );
 router.delete(
   "/delete/:id",
-  middlewareController.verifyToken,
+  // middlewareController.verifyToken,
   imageController.deleteImage
 );
 

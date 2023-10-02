@@ -5,9 +5,9 @@ const Schema = mongoose.Schema;
 const Image = new Schema(
   {
     name: { type: String, require: true },
-    image: {
-      data: Buffer,
-      contentType: String,
+    imageUrl: {
+      require: true,
+      type: String,
     },
     description: { type: String, require: true, maxLength: 200 },
     author: { type: String, require: true },

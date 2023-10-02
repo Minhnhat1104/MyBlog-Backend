@@ -48,13 +48,15 @@ const authController = {
   loginUser: async (req, res) => {
     try {
       const user: any = await User.findOne({ username: req.body.username });
+      console.log("🚀 ~ file: authController.ts:51 ~ user:", user);
       if (!user) {
         return res.status(404).json("Wrong username");
       }
-      const validPassword = await bcrypt.compareSync(
-        req.body.password,
-        user.password
-      ); // true
+      // const validPassword = await bcrypt.compareSync(
+      //   req.body.password,
+      //   user.password
+      // ); // true
+      const validPassword = user.password === req.body.password;
       if (!validPassword) {
         return res.status(404).json("Wrong password");
       }
