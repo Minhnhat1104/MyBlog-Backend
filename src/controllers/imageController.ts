@@ -1,19 +1,18 @@
 import Image from "../models/image.ts";
 import multer from "multer";
-import {
-  getStorage,
-  ref,
-  getDownloadURL,
-  uploadBytesResumable,
-} from "firebase/storage";
+// import {
+//   getStorage,
+//   ref,
+//   getDownloadURL,
+//   uploadBytesResumable,
+// } from "firebase/storage";
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "../config/firebase.config";
 
 // Initialize Firebase
 initializeApp(firebaseConfig);
-console.log("FirebaseConfig:", firebaseConfig);
 
-const storage = getStorage();
+// const storage = getStorage();
 
 export const upload = multer({
   storage: multer.memoryStorage(),
@@ -22,46 +21,46 @@ export const upload = multer({
 const imageController = {
   uploadImage: async (req, res) => {
     try {
-      const dateTime = giveCurrentDateTime();
+      // const dateTime = giveCurrentDateTime();
 
-      const storageRef = ref(
-        storage,
-        `files/${req.file.originalname + "       " + dateTime}`
-      );
+      // const storageRef = ref(
+      //   storage,
+      //   `files/${req.file.originalname + "       " + dateTime}`
+      // );
 
-      // Create file metadata including the content type
-      const metadata = {
-        contentType: req.file.mimetype,
-      };
+      // // Create file metadata including the content type
+      // const metadata = {
+      //   contentType: req.file.mimetype,
+      // };
 
-      // Upload the file in the bucket storage
-      const snapshot = await uploadBytesResumable(
-        storageRef,
-        req.file.buffer,
-        metadata
-      );
-      //by using uploadBytesResumable we can control the progress of uploading like pause, resume, cancel
+      // // Upload the file in the bucket storage
+      // const snapshot = await uploadBytesResumable(
+      //   storageRef,
+      //   req.file.buffer,
+      //   metadata
+      // );
+      // //by using uploadBytesResumable we can control the progress of uploading like pause, resume, cancel
 
-      // Grab the public url
-      const downloadURL = await getDownloadURL(snapshot.ref);
+      // // Grab the public url
+      // const downloadURL = await getDownloadURL(snapshot.ref);
 
-      console.log("File successfully uploaded.");
+      // console.log("File successfully uploaded.");
 
-      const newImage = new Image({
-        name: req.body.name,
-        imageUrl: downloadURL,
-        description: req.body.description,
-        author: req.body.username,
-      });
+      // const newImage = new Image({
+      //   name: req.body.name,
+      //   imageUrl: downloadURL,
+      //   description: req.body.description,
+      //   author: req.body.username,
+      // });
 
-      await newImage.save();
+      // await newImage.save();
 
-      return res.status(200).json({
-        message: "file uploaded to firebase storage",
-        name: req.file.originalname,
-        type: req.file.mimetype,
-        downloadURL: downloadURL,
-      });
+      // return res.status(200).json({
+      //   message: "file uploaded to firebase storage",
+      //   name: req.file.originalname,
+      //   type: req.file.mimetype,
+      //   downloadURL: downloadURL,
+      // });
     } catch (error) {
       return res.status(500).json(error);
     }
@@ -70,7 +69,6 @@ const imageController = {
   getAllImage: async (req, res) => {
     try {
       if (req.query.initial_num && req.query.per_page && req.query.page) {
-        console.log("navigate image per page");
         await imageController.getImagePerPage(req, res);
       } else {
         const images = await Image.find();
