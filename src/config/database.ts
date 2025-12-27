@@ -7,7 +7,7 @@
  */
 
 import { MongoClient, Db, Collection, Document } from "mongodb";
-import { COLLECTION, DATABASE } from "./types";
+import { COLLECTION } from "./types";
 
 let client: MongoClient;
 let database: Db;
@@ -36,7 +36,7 @@ async function _connectToDatabase(): Promise<Db> {
     await client.connect();
 
     // Get reference to the sample_mflix database
-    database = client.db(DATABASE);
+    database = client.db(process.env.DATABASE);
 
     console.log(`Connected to database: ${database.databaseName}`);
 
