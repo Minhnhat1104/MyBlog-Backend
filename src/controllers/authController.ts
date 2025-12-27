@@ -62,7 +62,7 @@ const authController = {
       const user = await userCollection.findOne({
         username: req.body.username,
       });
-      console.log("🚀 ~ file: authController.ts:51 ~ user:", user);
+      
       if (!user) {
         return res.status(404).json("Wrong username");
       }
