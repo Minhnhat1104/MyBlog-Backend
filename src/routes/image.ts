@@ -1,6 +1,6 @@
 import express from "express";
-import imageController, { upload } from "../controllers/imageController.ts";
-import middlewareController from "../controllers/middlewareController.ts";
+import imageController, { upload } from "@/controllers/imageController.ts";
+import middlewareController from "@/controllers/middlewareController.ts";
 
 const router = express.Router();
 

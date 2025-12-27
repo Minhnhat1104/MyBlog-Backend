@@ -7,6 +7,7 @@
  */
 
 import { MongoClient, Db, Collection, Document } from "mongodb";
+import { COLLECTION } from "./types";
 
 let client: MongoClient;
 let database: Db;
@@ -66,7 +67,7 @@ export async function connectToDatabase(): Promise<Db> {
  * @throws Error if database is not connected
  */
 export function getCollection<T extends Document>(
-  collectionName: string
+  collectionName: COLLECTION
 ): Collection<T> {
   if (!database) {
     throw new Error("Database not connected.");
@@ -86,50 +87,3 @@ export async function closeDatabaseConnection(): Promise<void> {
   }
 }
 
-/**
- * Verifies that all required indexes exist and sample data is present
- *
- * If any requirements are missing, this function will attempt to create them.
- */
-export async function verifyRequirements(): Promise<void> {
-  try {
-    const db = await connectToDatabase();
-
-    // Check if the movies collection exists and has data
-    await verifyMoviesCollection(db);
-    console.log("All database requirements verified successfully");
-  } catch (error) {
-    console.error("Requirements verification failed:", error);
-    throw error;
-  }
-}
-
-/**
- * Verifies the movies collection and creates necessary indexes
- */
-async function verifyMoviesCollection(db: Db): Promise<void> {
-  const moviesCollection = db.collection("movies");
-
-  // Check if collection has documents
-  const movieCount = await moviesCollection.estimatedDocumentCount();
-
-  if (movieCount === 0) {
-    console.warn(
-      "Movies collection is empty. Please ensure sample_mflix data is loaded."
-    );
-  }
-
-  // Create text search index on plot field for full-text search
-  try {
-    await moviesCollection.createIndex(
-      { plot: "text", title: "text", fullplot: "text" },
-      {
-        name: "text_search_index",
-        background: true,
-      }
-    );
-    console.log("Text search index created for movies collection");
-  } catch (error) {
-    console.error("Could not create text search index:", error);
-  }
-}

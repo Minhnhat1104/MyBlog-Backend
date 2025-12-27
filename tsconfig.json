@@ -10,7 +10,10 @@
     "allowImportingTsExtensions": true,
     "baseUrl": "src",
     "rootDir": "src",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "paths": {
+      "@/*": ["*"]
+    }
   },
   "include": ["./src/**/*"]
 }

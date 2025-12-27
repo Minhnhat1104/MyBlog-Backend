@@ -1,4 +1,3 @@
-import Image from "../models/image.ts";
 import multer from "multer";
 // import {
 //   getStorage,
@@ -7,7 +6,9 @@ import multer from "multer";
 //   uploadBytesResumable,
 // } from "firebase/storage";
 import { initializeApp } from "firebase/app";
-import { firebaseConfig } from "../config/firebase.config";
+import { firebaseConfig } from "@/config/firebase.config";
+import { getCollection } from "@/config/database";
+import { COLLECTION } from "@/config/types";
 
 // Initialize Firebase
 initializeApp(firebaseConfig);
@@ -22,17 +23,14 @@ const imageController = {
   uploadImage: async (req, res) => {
     try {
       // const dateTime = giveCurrentDateTime();
-
       // const storageRef = ref(
       //   storage,
       //   `files/${req.file.originalname + "       " + dateTime}`
       // );
-
       // // Create file metadata including the content type
       // const metadata = {
       //   contentType: req.file.mimetype,
       // };
-
       // // Upload the file in the bucket storage
       // const snapshot = await uploadBytesResumable(
       //   storageRef,
@@ -40,21 +38,16 @@ const imageController = {
       //   metadata
       // );
       // //by using uploadBytesResumable we can control the progress of uploading like pause, resume, cancel
-
       // // Grab the public url
       // const downloadURL = await getDownloadURL(snapshot.ref);
-
       // console.log("File successfully uploaded.");
-
       // const newImage = new Image({
       //   name: req.body.name,
       //   imageUrl: downloadURL,
       //   description: req.body.description,
       //   author: req.body.username,
       // });
-
       // await newImage.save();
-
       // return res.status(200).json({
       //   message: "file uploaded to firebase storage",
       //   name: req.file.originalname,
@@ -71,7 +64,9 @@ const imageController = {
       if (req.query.initial_num && req.query.per_page && req.query.page) {
         await imageController.getImagePerPage(req, res);
       } else {
-        const images = await Image.find();
+        const imageCollection = getCollection(COLLECTION.Image);
+
+        const images = await imageCollection.find();
         return res.status(200).json(images);
       }
     } catch (err) {
@@ -81,6 +76,8 @@ const imageController = {
 
   getImagePerPage: async (req, res) => {
     try {
+      const imageCollection = getCollection(COLLECTION.Image);
+
       const initalNum = Number(req.query.initial_num);
       const perPage = Number(req.query.per_page);
       const page = Number(req.query.page);
@@ -91,7 +88,7 @@ const imageController = {
         skipNum = 0;
         getNum = initalNum;
       }
-      const images = await Image.find().limit(skipNum + getNum);
+      const images = await imageCollection.find().limit(skipNum + getNum);
       res.status(200).json(images);
     } catch (err) {
       res.status(500).json(err);
@@ -100,8 +97,9 @@ const imageController = {
 
   getImageById: async (req, res) => {
     try {
-      // const image = await Image.findById({ _id: req.params.id });
-      const image = await Image.findById(req.params.id);
+      const imageCollection = getCollection(COLLECTION.Image);
+
+      const image = await imageCollection.findOne({ _id: req.params.id });
       res.status(200).json(image);
     } catch (err) {
       res.status(500).json(err);
@@ -110,8 +108,12 @@ const imageController = {
 
   deleteImage: async (req, res) => {
     try {
-      const image = await Image.findByIdAndDelete(req.params.id);
-      //console.log(req.params.id);
+      const imageCollection = getCollection(COLLECTION.Image);
+
+      const result = await imageCollection.deleteOne({ _id: req.params.id });
+      if (result.deletedCount === 0) {
+        throw new Error("Image not found!");
+      }
       res.status(200).json("delete successfully");
     } catch (err) {
       res.status(500).json(err);
@@ -120,27 +122,28 @@ const imageController = {
 
   updateImage: async (req, res) => {
     try {
-      await Image.findByIdAndUpdate(req.params.id, {
+      const imageCollection = getCollection(COLLECTION.Image);
+      const updateData = {
         name: req.body.name,
         description: req.body.description,
         author: req.body.author,
-      });
+      };
+
+      const result = await imageCollection.updateOne(
+        //  { _id: new ObjectId(id) },
+        { _id: req.params.id },
+        { $set: updateData }
+      );
+
+      if (result.matchedCount === 0) {
+        throw new Error("Movie not found");
+      }
 
       res.status(200).json("update successfully");
     } catch (err) {
       res.status(500).json(err);
     }
   },
-};
-
-const giveCurrentDateTime = () => {
-  const today = new Date();
-  const date =
-    today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
-  const time =
-    today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-  const dateTime = date + " " + time;
-  return dateTime;
 };
 
 export default imageController;

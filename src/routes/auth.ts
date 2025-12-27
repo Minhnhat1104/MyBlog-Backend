@@ -1,6 +1,6 @@
 import express from "express";
-import authController from "../controllers/authController.ts";
-import middlewareController from "../controllers/middlewareController.ts";
+import authController from "@/controllers/authController.ts";
+import middlewareController from "@/controllers/middlewareController.ts";
 
 const router = express.Router();
 router.post("/register", authController.registerUser);

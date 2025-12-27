@@ -1,5 +1,6 @@
-import User from "../models/User.ts";
 import bcrypt from "bcrypt";
+import { getCollection } from "@/config/database";
+import { COLLECTION } from "@/config/types";
 import jwt from "jsonwebtoken";
 
 const refreshTokens = [];
@@ -8,14 +9,23 @@ const authController = {
   registerUser: async (req, res) => {
     try {
       const saltRounds = 10;
+      const userCollection = getCollection(COLLECTION.User);
       const hash = bcrypt.hashSync(req.body.password, saltRounds);
-      const newUser = await new User({
+      const result = await userCollection.insertOne({
         username: req.body.username,
         password: hash,
         email: req.body.email,
       });
-      const user = await newUser.save();
-      res.status(202).json(user);
+
+      if (!result.acknowledged) {
+        throw new Error("Movie insertion was not acknowledged by the database");
+      }
+
+      // Retrieve the created document to return complete data
+      const createdUser = await userCollection.findOne({
+        _id: result.insertedId,
+      });
+      res.status(202).json(createdUser);
     } catch (err) {
       res.status(500).json(err);
     }
@@ -47,7 +57,11 @@ const authController = {
 
   loginUser: async (req, res) => {
     try {
-      const user: any = await User.findOne({ username: req.body.username });
+      const userCollection = getCollection(COLLECTION.User);
+
+      const user = await userCollection.findOne({
+        username: req.body.username,
+      });
       console.log("🚀 ~ file: authController.ts:51 ~ user:", user);
       if (!user) {
         return res.status(404).json("Wrong username");
