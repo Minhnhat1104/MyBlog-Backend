@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import { MongoClient, Db, Collection, Document } from "mongodb";
 
 const Schema = mongoose.Schema;
 
