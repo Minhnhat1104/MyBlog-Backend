@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { default as authRouter } from "@/routes/auth";
 import { default as imageRouter } from "@/routes/image";
-import { closeDatabaseConnection, connectToDatabase } from "./config/database";
+import { closeDatabaseConnection, connectToDatabase } from "./config/mongoDB";
 // Import the functions you need from the SDKs you need
 
 dotenv.config();

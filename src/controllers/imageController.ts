@@ -7,7 +7,7 @@ import multer from "multer";
 // } from "firebase/storage";
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "@/config/firebase.config";
-import { getCollection } from "@/config/database";
+import { getCollection } from "@/config/mongoDB";
 import { COLLECTION } from "@/config/types";
 
 // Initialize Firebase

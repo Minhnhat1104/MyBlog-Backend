@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { getCollection } from "@/config/database";
+import { getCollection } from "@/config/mongoDB";
 import { COLLECTION } from "@/config/types";
 import jwt from "jsonwebtoken";
 
