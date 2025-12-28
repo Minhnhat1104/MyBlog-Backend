@@ -84,7 +84,7 @@ const authController = {
         path: "/",
         sameSite: "strict",
       });
-      const { password, ...other } = user?._doc;
+      const { password, ...other } = user;
       res.status(200).json({ ...other, accessToken: accessToken });
     } catch (err) {
       res.status(500).json(err);
