@@ -9,6 +9,8 @@ import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "@/config/firebase.config";
 import { getCollection } from "@/config/mongoDB";
 import { COLLECTION } from "@/config/types";
+import { Request, Response } from "express";
+import { ObjectId } from "mongodb";
 
 // Initialize Firebase
 initializeApp(firebaseConfig);
@@ -20,7 +22,7 @@ export const upload = multer({
 }).single("file");
 
 const imageController = {
-  uploadImage: async (req, res) => {
+  uploadImage: async (req: Request, res: Response) => {
     try {
       // const dateTime = giveCurrentDateTime();
       // const storageRef = ref(
@@ -59,7 +61,7 @@ const imageController = {
     }
   },
 
-  getAllImage: async (req, res) => {
+  getAllImage: async (req: Request, res: Response) => {
     try {
       if (req.query.initial_num && req.query.per_page && req.query.page) {
         await imageController.getImagePerPage(req, res);
@@ -74,7 +76,7 @@ const imageController = {
     }
   },
 
-  getImagePerPage: async (req, res) => {
+  getImagePerPage: async (req: Request, res: Response) => {
     try {
       const imageCollection = getCollection(COLLECTION.Image);
 
@@ -95,22 +97,26 @@ const imageController = {
     }
   },
 
-  getImageById: async (req, res) => {
+  getImageById: async (req: Request, res: Response) => {
     try {
       const imageCollection = getCollection(COLLECTION.Image);
 
-      const image = await imageCollection.findOne({ _id: req.params.id });
+      const image = await imageCollection.findOne({
+        _id: new ObjectId(req.params.id),
+      });
       res.status(200).json(image);
     } catch (err) {
       res.status(500).json(err);
     }
   },
 
-  deleteImage: async (req, res) => {
+  deleteImage: async (req: Request, res: Response) => {
     try {
       const imageCollection = getCollection(COLLECTION.Image);
 
-      const result = await imageCollection.deleteOne({ _id: req.params.id });
+      const result = await imageCollection.deleteOne({
+        _id: new ObjectId(req.params.id),
+      });
       if (result.deletedCount === 0) {
         throw new Error("Image not found!");
       }
@@ -120,7 +126,7 @@ const imageController = {
     }
   },
 
-  updateImage: async (req, res) => {
+  updateImage: async (req: Request, res: Response) => {
     try {
       const imageCollection = getCollection(COLLECTION.Image);
       const updateData = {
@@ -131,7 +137,7 @@ const imageController = {
 
       const result = await imageCollection.updateOne(
         //  { _id: new ObjectId(id) },
-        { _id: req.params.id },
+        { _id: new ObjectId(req.params.id) },
         { $set: updateData }
       );
 
