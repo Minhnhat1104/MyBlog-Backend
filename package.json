@@ -6,8 +6,8 @@
   "scripts": {
     "start": "nodemon --exec ts-node -r tsconfig-paths/register src/index.ts",
     "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/index.ts",
-    "docker": "docker compose -f docker/docker-compose.yml up",
-    "docker:up": "docker compose -f docker/docker-compose.yml up -d",
+    "docker:up": "docker compose -f docker/docker-compose.yml up",
+    "docker:detach": "docker compose -f docker/docker-compose.yml up -d",
     "docker:down": "docker compose -f docker/docker-compose.yml down",
     "docker:reset": "docker compose -f docker/docker-compose.yml down -v",
     "docker:logs": "docker compose -f docker/docker-compose.yml logs -f",
