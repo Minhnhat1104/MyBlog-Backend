@@ -36,7 +36,7 @@ async function _connectToDatabase(): Promise<Db> {
     await client.connect();
 
     // Get reference to the sample_mflix database
-    database = client.db(process.env.DATABASE);
+    database = client.db(process.env.MYSQL_DATABASE);
 
     console.log(`Connected to database: ${database.databaseName}`);
 
@@ -86,4 +86,3 @@ export async function closeDatabaseConnection(): Promise<void> {
     console.log("Database connection closed");
   }
 }
-

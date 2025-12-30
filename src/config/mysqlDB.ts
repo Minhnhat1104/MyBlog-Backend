@@ -3,11 +3,11 @@ import mysql from "mysql";
 export async function connectToMysql(): Promise<any> {
   try {
     const connection = mysql.createConnection({
-      host: process.env.DATABASE_HOST,
-      user: process.env.DATABASE_USER,
-      password: process.env.DATABASE_PASSWORD,
-      database: process.env.DATABASE_NAME,
-      port: parseInt(process.env.DATABASE_PORT || ""),
+      host: process.env.MYSQL_HOST,
+      user: process.env.MYSQL_USER,
+      password: process.env.MYSQL_PASSWORD,
+      database: process.env.MYSQL_DATABASE,
+      port: parseInt(process.env.MYSQL_PORT || ""),
     });
 
     connection.connect();
