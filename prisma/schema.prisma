@@ -19,6 +19,22 @@ datasource db {
 // 1) npx prisma migrate dev --name init
 // 2) check folder generate prisma/migrations/
 
+// npx prisma migrate dev --name init
+// 1) schema.prisma
+// 2) So sánh DB
+// 3) Sinh migration.sql
+// 4) Chạy SQL vào MySQL
+// 5) Lưu lịch sử migration ở table "prisma_migrations"
+// 6) Generate Prisma Client: npx prisma generate
+
+// npx prisma migrate deploy
+// Lấy những migration đã apply vào DB dev để apply vào db thật
+// 1) Đọc các migration trong prisma/migrations
+// 2) Kiểm tra bảng _prisma_migrations
+// 3) Chạy chính xác những migration CHƯA chạy
+// 3) KHÔNG tạo migration mới, Không reset DB
+// 4) Không chạy Generate Prisma
+
 model User {
   id       Int     @id @default(autoincrement())
   email    String  @unique
