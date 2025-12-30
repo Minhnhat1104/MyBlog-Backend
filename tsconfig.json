@@ -10,9 +10,9 @@
     "allowImportingTsExtensions": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "baseUrl": "src",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["*"]
+      "@/*": ["src/*"]
     },
     "strict": true,
     "esModuleInterop": true

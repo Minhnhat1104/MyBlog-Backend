@@ -6,6 +6,17 @@ import { default as authRouter } from "@/routes/auth";
 import { default as imageRouter } from "@/routes/image";
 import { closeDatabaseConnection, connectToDatabase } from "./config/mongoDB";
 // Import the functions you need from the SDKs you need
+import "dotenv/config";
+import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import { PrismaClient } from "../generated/prisma/client";
+
+const adapter = new PrismaMariaDb({
+  host: "localhost",
+  port: 3306,
+  connectionLimit: 5,
+});
+
+const prisma = new PrismaClient({ adapter });
 
 dotenv.config();
 const app = express();
@@ -18,7 +29,6 @@ app.use(express.json());
 //routes
 app.use("/v1/auth", authRouter);
 app.use("/v1/image", imageRouter);
-
 
 async function startServer() {
   try {
@@ -33,7 +43,9 @@ async function startServer() {
     const PORT = process.env.PORT || 8000;
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
-      console.log(`API documentation available at http://localhost:${PORT}/api-docs`);
+      console.log(
+        `API documentation available at http://localhost:${PORT}/api-docs`
+      );
     });
   } catch (error) {
     console.error("Failed to start server:", error);
@@ -59,7 +71,6 @@ process.on("SIGTERM", () => {
   closeDatabaseConnection();
   process.exit(0);
 });
-
 
 // Only start the server if this file is run directly (not imported for testing)
 if (require.main === module) {

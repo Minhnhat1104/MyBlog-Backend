@@ -4,6 +4,7 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+// "npx prisma generate" generate node_modules/.prisma/client
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -11,4 +12,27 @@ generator client {
 
 datasource db {
   provider = "mysql"
+}
+
+// Mysql Prisma type mapping: https://www.prisma.io/docs/orm/overview/databases/mysql#type-mapping-between-mysql-to-prisma-schema
+// use migration to update: 
+// 1) npx prisma migrate dev --name init
+// 2) check folder generate prisma/migrations/
+
+model User {
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  username String?
+  admin    Boolean
+  images   Image[]
+}
+
+model Image {
+  id        Int    @id @default(autoincrement())
+  name      String
+  ext       String
+  width     Int
+  height    Int
+  creator   User   @relation(fields: [creatorId], references: [id])
+  creatorId Int
 }
