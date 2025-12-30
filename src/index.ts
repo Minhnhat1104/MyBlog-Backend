@@ -7,16 +7,7 @@ import { default as imageRouter } from "@/routes/image";
 import { closeDatabaseConnection, connectToDatabase } from "./config/mongoDB";
 // Import the functions you need from the SDKs you need
 import "dotenv/config";
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
-import { PrismaClient } from "../generated/prisma/client";
-
-const adapter = new PrismaMariaDb({
-  host: "localhost",
-  port: 3306,
-  connectionLimit: 5,
-});
-
-const prisma = new PrismaClient({ adapter });
+import { prismaConnectDB } from "./config/prisma.config";
 
 dotenv.config();
 const app = express();
@@ -36,7 +27,8 @@ async function startServer() {
 
     // Connect to MongoDB database
     console.log("Connecting to MongoDB...");
-    await connectToDatabase();
+    // await connectToDatabase();
+    prismaConnectDB();
     console.log("Connected to MongoDB successfully");
 
     // Start the Express server

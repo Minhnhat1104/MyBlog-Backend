@@ -15,6 +15,24 @@ services:
       # image mysql:8.0 auto run /docker-entrypoint-initdb.d/*.sql when init, but now we use prisma instead
       # - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
     command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-p",
+          "nhat2002",
+        ]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
   backend:
     container_name: backend_dev
     build:
@@ -25,8 +43,11 @@ services:
       - "3000:3000"
     environment:
       NODE_ENV: development
-    depends_on: # quyết định thứ tự start container
-      - mysql
+    depends_on:
+      mysql: # quyết định thứ tự start container
+        condition: service_healthy
+        restart: true
+
     volumes:
       - ../:/app # 2-way bind with folder /app in Container
       - /app/node_modules # anonymous volume, ko bind mount với máy thực

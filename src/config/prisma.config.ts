@@ -7,8 +7,12 @@ export const prismaConnectDB = () => {
   const adapter = new PrismaMariaDb({
     host: process.env.MYSQL_HOST,
     port: parseInt(process.env.MYSQL_PORT || "3306"),
+    password: process.env.MYSQL_PASSWORD,
+    user: process.env.MYSQL_USER,
     connectionLimit: 5,
   });
 
   prisma = new PrismaClient({ adapter });
 };
+
+export { prisma };
