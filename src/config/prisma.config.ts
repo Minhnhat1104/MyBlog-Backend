@@ -9,6 +9,7 @@ export const prismaConnectDB = () => {
     port: parseInt(process.env.MYSQL_PORT || "3306"),
     password: process.env.MYSQL_PASSWORD,
     user: process.env.MYSQL_USER,
+    database: process.env.MYSQL_DATABASE,
     connectionLimit: 5,
   });
 

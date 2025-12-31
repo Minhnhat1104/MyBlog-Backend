@@ -20,7 +20,8 @@ const authController = {
       });
 
       if (newUser) {
-        res.status(202).json({ user: newUser, success: true });
+        const { password, ...rest } = newUser;
+        res.status(202).json({ user: rest });
       }
     } catch (err) {
       res.status(400).json(err);
@@ -53,6 +54,8 @@ const authController = {
 
   loginUser: async (req: Request, res: Response) => {
     try {
+      console.log("🚀 ~ req.body:", req.body);
+
       const user = await prisma?.user.findFirst({
         where: {
           username: req.body.username || "",
@@ -80,7 +83,7 @@ const authController = {
         sameSite: "strict",
       });
       const { password, ...other } = user;
-      res.status(200).json({ ...other, accessToken: accessToken });
+      res.status(200).json({ data: { ...other, accessToken: accessToken } });
     } catch (err) {
       res.status(400).json(err);
     }
