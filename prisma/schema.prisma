@@ -36,19 +36,24 @@ datasource db {
 // 4) Không chạy Generate Prisma
 
 model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  username String?
-  admin    Boolean
-  images   Image[]
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  username  String
+  password  String
+  admin     Boolean
+  images    Image[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Image {
-  id        Int    @id @default(autoincrement())
-  name      String
-  ext       String
-  width     Int
-  height    Int
-  creator   User   @relation(fields: [creatorId], references: [id])
-  creatorId Int
+  id         Int      @id @default(autoincrement())
+  name       String
+  ext        String
+  width      Int
+  height     Int
+  creator    User     @relation(fields: [creator_id], references: [id])
+  creator_id Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }

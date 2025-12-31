@@ -1,19 +1,7 @@
 import multer from "multer";
-// import {
-//   getStorage,
-//   ref,
-//   getDownloadURL,
-//   uploadBytesResumable,
-// } from "firebase/storage";
-import { initializeApp } from "firebase/app";
-import { firebaseConfig } from "@/config/firebase.config";
-import { getCollection } from "@/config/mongoDB";
-import { COLLECTION } from "@/config/types";
-import { Request, Response } from "express";
-import { ObjectId } from "mongodb";
 
-// Initialize Firebase
-initializeApp(firebaseConfig);
+import { Request, Response } from "express";
+import { prisma } from "@/config/prisma.config";
 
 // const storage = getStorage();
 
@@ -63,12 +51,14 @@ const imageController = {
 
   getAllImage: async (req: Request, res: Response) => {
     try {
-      if (req.query.initial_num && req.query.per_page && req.query.page) {
+      if (req.query.size && req.query.page) {
         await imageController.getImagePerPage(req, res);
       } else {
-        const imageCollection = getCollection(COLLECTION.Image);
-
-        const images = await imageCollection.find();
+        const images = await prisma?.image.findMany({
+          orderBy: {
+            created_at: "desc",
+          },
+        });
         return res.status(200).json(images);
       }
     } catch (err) {
@@ -78,19 +68,17 @@ const imageController = {
 
   getImagePerPage: async (req: Request, res: Response) => {
     try {
-      const imageCollection = getCollection(COLLECTION.Image);
-
-      const initalNum = Number(req.query.initial_num);
-      const perPage = Number(req.query.per_page);
+      const size = Number(req.query.size);
       const page = Number(req.query.page);
-      console.log("Paging: ", initalNum, perPage, page);
-      let skipNum = initalNum + perPage * (page - 1);
-      let getNum = perPage;
-      if (page === 0) {
-        skipNum = 0;
-        getNum = initalNum;
-      }
-      const images = await imageCollection.find().limit(skipNum + getNum);
+      console.log("Paging: ", size, page);
+
+      const images = await prisma?.image.findMany({
+        skip: size * (page - 1),
+        take: size,
+        orderBy: {
+          created_at: "desc",
+        },
+      });
       res.status(200).json(images);
     } catch (err) {
       res.status(500).json(err);
@@ -99,10 +87,10 @@ const imageController = {
 
   getImageById: async (req: Request, res: Response) => {
     try {
-      const imageCollection = getCollection(COLLECTION.Image);
-
-      const image = await imageCollection.findOne({
-        _id: new ObjectId(req.params.id),
+      const image = await prisma?.image.findUnique({
+        where: {
+          id: parseInt(req.params.id),
+        },
       });
       res.status(200).json(image);
     } catch (err) {
@@ -112,12 +100,12 @@ const imageController = {
 
   deleteImage: async (req: Request, res: Response) => {
     try {
-      const imageCollection = getCollection(COLLECTION.Image);
-
-      const result = await imageCollection.deleteOne({
-        _id: new ObjectId(req.params.id),
+      const result = await prisma?.image.delete({
+        where: {
+          id: parseInt(req.params.id),
+        },
       });
-      if (result.deletedCount === 0) {
+      if (!result) {
         throw new Error("Image not found!");
       }
       res.status(200).json("delete successfully");
@@ -128,21 +116,19 @@ const imageController = {
 
   updateImage: async (req: Request, res: Response) => {
     try {
-      const imageCollection = getCollection(COLLECTION.Image);
-      const updateData = {
-        name: req.body.name,
-        description: req.body.description,
-        author: req.body.author,
-      };
+      const result = await prisma?.image.update({
+        where: {
+          id: parseInt(req.params.id),
+        },
+        data: {
+          name: req.body.name,
+          // description: req.body.description,
+          creator_id: req.body.creator_id,
+        },
+      });
 
-      const result = await imageCollection.updateOne(
-        //  { _id: new ObjectId(id) },
-        { _id: new ObjectId(req.params.id) },
-        { $set: updateData }
-      );
-
-      if (result.matchedCount === 0) {
-        throw new Error("Movie not found");
+      if (!result) {
+        throw new Error("Update failed");
       }
 
       res.status(200).json("update successfully");

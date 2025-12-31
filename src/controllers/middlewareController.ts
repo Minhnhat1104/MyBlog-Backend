@@ -16,15 +16,17 @@ const middlewareController = {
         accessToken,
         process.env.ACCESS_TOKEN_KEY || "",
         (err, user) => {
-          console.log("🚀 ~ user:", user);
+          // user is JWT payload
           if (err) {
             return res.status(401).json("Token is not valid");
           }
-          req.user = {
-            id: "",
-            username: "",
-            admin: false,
-          };
+          if (typeof user !== "string") {
+            req.user = {
+              id: user?.id,
+              username: user?.username,
+              admin: user?.admin,
+            };
+          }
           next();
         }
       );

@@ -1,8 +1,7 @@
 import bcrypt from "bcrypt";
-import { getCollection } from "@/config/mongoDB";
-import { COLLECTION } from "@/config/types";
 import jwt, { VerifyErrors } from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
+import { prisma } from "@/config/prisma.config";
 
 const refreshTokens: string[] = [];
 
@@ -10,25 +9,21 @@ const authController = {
   registerUser: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const saltRounds = 10;
-      const userCollection = getCollection(COLLECTION.User);
       const hash = bcrypt.hashSync(req.body.password, saltRounds);
-      const result = await userCollection.insertOne({
-        username: req.body.username,
-        password: hash,
-        email: req.body.email,
+      const newUser = await prisma?.user.create({
+        data: {
+          username: req.body.username,
+          password: hash,
+          admin: false,
+          email: req.body.email,
+        },
       });
 
-      if (!result.acknowledged) {
-        throw new Error("Movie insertion was not acknowledged by the database");
+      if (newUser) {
+        res.status(202).json({ user: newUser, success: true });
       }
-
-      // Retrieve the created document to return complete data
-      const createdUser = await userCollection.findOne({
-        _id: result.insertedId,
-      });
-      res.status(202).json(createdUser);
     } catch (err) {
-      res.status(500).json(err);
+      res.status(400).json(err);
     }
   },
 
@@ -58,20 +53,20 @@ const authController = {
 
   loginUser: async (req: Request, res: Response) => {
     try {
-      const userCollection = getCollection(COLLECTION.User);
-
-      const user = await userCollection.findOne({
-        username: req.body.username,
+      const user = await prisma?.user.findFirst({
+        where: {
+          username: req.body.username || "",
+        },
       });
 
       if (!user) {
         return res.status(404).json("Wrong username");
       }
-      // const validPassword = await bcrypt.compareSync(
-      //   req.body.password,
-      //   user.password
-      // ); // true
-      const validPassword = user.password === req.body.password;
+      const validPassword = await bcrypt.compareSync(
+        req.body.password,
+        user.password
+      );
+      // const validPassword = user.password === req.body.password;
       if (!validPassword) {
         return res.status(404).json("Wrong password");
       }
@@ -87,7 +82,7 @@ const authController = {
       const { password, ...other } = user;
       res.status(200).json({ ...other, accessToken: accessToken });
     } catch (err) {
-      res.status(500).json(err);
+      res.status(400).json(err);
     }
   },
 
@@ -106,7 +101,7 @@ const authController = {
   requestRefreshToken: (req: Request, res: Response) => {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
-      return res.status(404).json("You're not authenticated");
+      return res.status(401).json("You're not authenticated");
     }
     // if (!refreshTokens.includes(refreshToken)) {
     //   return res.status(403).json("Refresh is not valid");

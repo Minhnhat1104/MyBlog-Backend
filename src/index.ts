@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { default as authRouter } from "@/routes/auth";
 import { default as imageRouter } from "@/routes/image";
-import { closeDatabaseConnection, connectToDatabase } from "./config/mongoDB";
 // Import the functions you need from the SDKs you need
 import "dotenv/config";
 import { prismaConnectDB } from "./config/prisma.config";
@@ -54,13 +53,13 @@ async function startServer() {
  */
 process.on("SIGINT", () => {
   console.log("\nReceived SIGINT. Shutting down...");
-  closeDatabaseConnection();
+  // closeDatabaseConnection();
   process.exit(0);
 });
 
 process.on("SIGTERM", () => {
   console.log("\nReceived SIGTERM. Shutting down...");
-  closeDatabaseConnection();
+  // closeDatabaseConnection();
   process.exit(0);
 });
 
