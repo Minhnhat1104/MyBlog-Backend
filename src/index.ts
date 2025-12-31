@@ -26,10 +26,10 @@ async function startServer() {
     console.log("Starting MongoDB Sample MFlix API...");
 
     // Connect to MongoDB database
-    console.log("Connecting to MongoDB...");
+    console.log("Connecting to MySQL...");
     // await connectToDatabase();
     prismaConnectDB();
-    console.log("Connected to MongoDB successfully");
+    console.log("Connected to MySQL successfully");
 
     // Start the Express server
     const PORT = process.env.PORT || 8000;
