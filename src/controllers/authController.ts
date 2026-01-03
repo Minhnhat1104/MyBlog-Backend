@@ -33,7 +33,7 @@ const authController = {
       {
         username: user.username,
         admin: user.admin,
-        id: user._id,
+        id: user.id,
       },
       process.env.ACCESS_TOKEN_KEY || "",
       { expiresIn: "20s" }
@@ -45,7 +45,7 @@ const authController = {
       {
         username: user.username,
         admin: user.admin,
-        id: user._id,
+        id: user.id,
       },
       process.env.REFRESH_TOKEN_KEY || "",
       { expiresIn: "365d" }

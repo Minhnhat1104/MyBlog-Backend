@@ -6,45 +6,15 @@ import { Image } from "generated/prisma/client";
 
 // const storage = getStorage();
 
-export const upload = multer({
-  storage: multer.memoryStorage(),
-}).single("file");
+export const upload = multer({ dest: "uploads/" });
 
 const imageController = {
   uploadImage: async (req: Request, res: Response) => {
     try {
-      // const dateTime = giveCurrentDateTime();
-      // const storageRef = ref(
-      //   storage,
-      //   `files/${req.file.originalname + "       " + dateTime}`
-      // );
-      // // Create file metadata including the content type
-      // const metadata = {
-      //   contentType: req.file.mimetype,
-      // };
-      // // Upload the file in the bucket storage
-      // const snapshot = await uploadBytesResumable(
-      //   storageRef,
-      //   req.file.buffer,
-      //   metadata
-      // );
-      // //by using uploadBytesResumable we can control the progress of uploading like pause, resume, cancel
-      // // Grab the public url
-      // const downloadURL = await getDownloadURL(snapshot.ref);
-      // console.log("File successfully uploaded.");
-      // const newImage = new Image({
-      //   name: req.body.name,
-      //   imageUrl: downloadURL,
-      //   description: req.body.description,
-      //   author: req.body.username,
-      // });
-      // await newImage.save();
-      // return res.status(200).json({
-      //   message: "file uploaded to firebase storage",
-      //   name: req.file.originalname,
-      //   type: req.file.mimetype,
-      //   downloadURL: downloadURL,
-      // });
+      console.log("🚀 ~ req?.file:", req?.file);
+      console.log("🚀 ~ req?.body:", req?.body);
+
+      return res.status(200).json({ msg: "Post image successfully!" });
     } catch (error) {
       return res.status(500).json({ msg: error });
     }

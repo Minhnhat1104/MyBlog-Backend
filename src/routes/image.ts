@@ -21,7 +21,7 @@ router.patch(
 router.post(
   "/upload",
   // middlewareController.verifyToken,
-  upload,
+  upload.single("imageFile"),
   imageController.uploadImage
 );
 router.delete(
