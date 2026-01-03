@@ -54,8 +54,6 @@ const authController = {
 
   loginUser: async (req: Request, res: Response) => {
     try {
-      console.log("🚀 ~ req.body:", req.body);
-
       const user = await prisma?.user.findFirst({
         where: {
           username: req.body.username || "",
@@ -63,7 +61,7 @@ const authController = {
       });
 
       if (!user) {
-        return res.status(404).json("Wrong username");
+        return res.status(404).json({ msg: "Wrong username" });
       }
       const validPassword = await bcrypt.compareSync(
         req.body.password,
@@ -71,7 +69,7 @@ const authController = {
       );
       // const validPassword = user.password === req.body.password;
       if (!validPassword) {
-        return res.status(404).json("Wrong password");
+        return res.status(404).json({ msg: "Wrong password" });
       }
       const accessToken = authController.generateAccessToken(user);
       const refreshToken = authController.generateRefreshToken(user);
@@ -95,7 +93,7 @@ const authController = {
         path: "/",
       });
       refreshTokens.filter((token) => token !== req.cookies.refreshToken);
-      res.status(200).json("logout successfully");
+      res.status(200).json({ msg: "logout successfully" });
     } catch (err) {
       console.log(err);
     }
@@ -104,10 +102,10 @@ const authController = {
   requestRefreshToken: (req: Request, res: Response) => {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
-      return res.status(401).json("You're not authenticated");
+      return res.status(401).json({ msg: "You're not authenticated" });
     }
     // if (!refreshTokens.includes(refreshToken)) {
-    //   return res.status(403).json("Refresh is not valid");
+    //   return res.status(403).json({msg: "Refresh is not valid"});
     // }
     jwt.verify(
       refreshToken,

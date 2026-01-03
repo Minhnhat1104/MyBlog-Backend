@@ -9,7 +9,7 @@ const middlewareController = {
           ? req.headers.token
           : req.headers.token?.[0];
       if (!token) {
-        return res.status(403).json("You are not authenticate");
+        return res.status(403).json({ msg: "You are not authenticate" });
       }
       const accessToken = token.split(" ")[1];
       jwt.verify(
@@ -18,7 +18,7 @@ const middlewareController = {
         (err, user) => {
           // user is JWT payload
           if (err) {
-            return res.status(401).json("Token is not valid");
+            return res.status(401).json({ msg: "Token is not valid" });
           }
           if (typeof user !== "string") {
             req.user = {
@@ -46,7 +46,9 @@ const middlewareController = {
         if (!req?.user?.admin) {
           return res
             .status(401)
-            .json("You do not have the authority to perform this action");
+            .json({
+              msg: "You do not have the authority to perform this action",
+            });
         }
         next();
       } catch (err) {

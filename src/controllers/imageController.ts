@@ -45,7 +45,7 @@ const imageController = {
       //   downloadURL: downloadURL,
       // });
     } catch (error) {
-      return res.status(500).json(error);
+      return res.status(500).json({ msg: error });
     }
   },
 
@@ -62,7 +62,7 @@ const imageController = {
         return res.status(200).json(images);
       }
     } catch (err) {
-      res.status(500).json(err);
+      res.status(500).json({ msg: err });
     }
   },
 
@@ -81,7 +81,7 @@ const imageController = {
       });
       res.status(200).json(images);
     } catch (err) {
-      res.status(500).json(err);
+      res.status(500).json({ msg: err });
     }
   },
 
@@ -94,7 +94,7 @@ const imageController = {
       });
       res.status(200).json(image);
     } catch (err) {
-      res.status(500).json(err);
+      res.status(500).json({ msg: err });
     }
   },
 
@@ -108,9 +108,9 @@ const imageController = {
       if (!result) {
         throw new Error("Image not found!");
       }
-      res.status(200).json("delete successfully");
+      res.status(200).json({ msg: "delete successfully" });
     } catch (err) {
-      res.status(500).json(err);
+      res.status(500).json({ msg: err });
     }
   },
 
@@ -131,9 +131,9 @@ const imageController = {
         throw new Error("Update failed");
       }
 
-      res.status(200).json("update successfully");
+      res.status(200).json({ msg: "update successfully" });
     } catch (err) {
-      res.status(500).json(err);
+      res.status(500).json({ msg: err });
     }
   },
 };
