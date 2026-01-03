@@ -9,7 +9,7 @@ const middlewareController = {
           ? req.headers.token
           : req.headers.token?.[0];
       if (!token) {
-        return res.status(403).json({ msg: "You are not authenticate" });
+        return res.status(401).json({ msg: "Your login session is expired." });
       }
       const accessToken = token.split(" ")[1];
       jwt.verify(
@@ -18,7 +18,9 @@ const middlewareController = {
         (err, user) => {
           // user is JWT payload
           if (err) {
-            return res.status(401).json({ msg: "Token is not valid" });
+            return res
+              .status(401)
+              .json({ msg: "Your login information is invalid." });
           }
           if (typeof user !== "string") {
             req.user = {
@@ -44,11 +46,9 @@ const middlewareController = {
     middlewareController.verifyToken(req, res, () => {
       try {
         if (!req?.user?.admin) {
-          return res
-            .status(401)
-            .json({
-              msg: "You do not have the authority to perform this action",
-            });
+          return res.status(401).json({
+            msg: "You do not have the authority to perform this action",
+          });
         }
         next();
       } catch (err) {

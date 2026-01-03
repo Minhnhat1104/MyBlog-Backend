@@ -2,6 +2,7 @@ import multer from "multer";
 
 import { Request, Response } from "express";
 import { prisma } from "@/config/prisma.config";
+import { Image } from "generated/prisma/client";
 
 // const storage = getStorage();
 
@@ -51,35 +52,29 @@ const imageController = {
 
   getAllImage: async (req: Request, res: Response) => {
     try {
+      let images: Image[] | null = [];
       if (req.query.size && req.query.page) {
-        await imageController.getImagePerPage(req, res);
+        const size = Number(req.query.size);
+        const page = Number(req.query.page);
+        console.log("Paging: ", size, page);
+
+        images =
+          (await prisma?.image.findMany({
+            skip: size * (page - 1),
+            take: size,
+            orderBy: {
+              created_at: "desc",
+            },
+          })) || [];
       } else {
-        const images = await prisma?.image.findMany({
-          orderBy: {
-            created_at: "desc",
-          },
-        });
-        return res.status(200).json(images);
+        images =
+          (await prisma?.image.findMany({
+            orderBy: {
+              created_at: "desc",
+            },
+          })) || [];
       }
-    } catch (err) {
-      res.status(500).json({ msg: err });
-    }
-  },
-
-  getImagePerPage: async (req: Request, res: Response) => {
-    try {
-      const size = Number(req.query.size);
-      const page = Number(req.query.page);
-      console.log("Paging: ", size, page);
-
-      const images = await prisma?.image.findMany({
-        skip: size * (page - 1),
-        take: size,
-        orderBy: {
-          created_at: "desc",
-        },
-      });
-      res.status(200).json(images);
+      res.status(200).json({ data: images });
     } catch (err) {
       res.status(500).json({ msg: err });
     }

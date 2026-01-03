@@ -24,7 +24,7 @@ const authController = {
         res.status(202).json({ user: rest });
       }
     } catch (err) {
-      res.status(400).json(err);
+      res.status(400).json({ msg: err });
     }
   },
 
@@ -75,7 +75,6 @@ const authController = {
       const refreshToken = authController.generateRefreshToken(user);
       refreshTokens.push(refreshToken);
       res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
         secure: false,
         path: "/",
         sameSite: "strict",
@@ -83,7 +82,7 @@ const authController = {
       const { password, ...other } = user;
       res.status(200).json({ data: { ...other, accessToken: accessToken } });
     } catch (err) {
-      res.status(400).json(err);
+      res.status(400).json({ msg: err });
     }
   },
 
@@ -112,7 +111,10 @@ const authController = {
       process.env.REFRESH_TOKEN_KEY || "",
       (err: VerifyErrors | null, user: any) => {
         if (err) {
-          return console.log(err);
+          console.log(err);
+          return res
+            .status(401)
+            .json({ msg: "Your login information is invalid.", err });
         }
         refreshTokens.filter((token) => token !== refreshToken);
         const newAccessToken = authController.generateAccessToken(user);
@@ -124,7 +126,9 @@ const authController = {
           path: "/",
           sameSite: "strict",
         });
-        res.status(200).json({ accessToken: newAccessToken });
+        res
+          .status(200)
+          .json({ data: { ...user, accessToken: newAccessToken } });
       }
     );
   },
