@@ -75,6 +75,7 @@ const authController = {
       const refreshToken = authController.generateRefreshToken(user);
       refreshTokens.push(refreshToken);
       res.cookie("refreshToken", refreshToken, {
+        // httpOnly: true,
         secure: false,
         path: "/",
         sameSite: "strict",
@@ -121,7 +122,7 @@ const authController = {
         const newRefreshToken = authController.generateRefreshToken(user);
         refreshTokens.push(newRefreshToken);
         res.cookie("refreshToken", newRefreshToken, {
-          httpOnly: true,
+          // httpOnly: true,
           secure: false,
           path: "/",
           sameSite: "strict",
