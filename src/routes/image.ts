@@ -7,6 +7,7 @@ const router = express.Router();
 
 // router.get("/", middlewareController.verifyToken, imageController.getAllImage);
 router.get("/", imageController.getAllImage);
+router.get("/file/:id", imageController.getStatisImage);
 
 router.get(
   "/:id",

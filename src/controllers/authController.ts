@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import jwt, { VerifyErrors } from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
 import { prisma } from "@/config/prisma.config";
+import { errorToString } from "@/tools/error";
 
 const refreshTokens: string[] = [];
 
@@ -24,7 +25,7 @@ const authController = {
         res.status(202).json({ user: rest });
       }
     } catch (err) {
-      res.status(400).json({ msg: err });
+      res.status(400).json({ msg: errorToString(err) });
     }
   },
 
@@ -83,7 +84,7 @@ const authController = {
       const { password, ...other } = user;
       res.status(200).json({ data: { ...other, accessToken: accessToken } });
     } catch (err) {
-      res.status(400).json({ msg: err });
+      res.status(400).json({ msg: errorToString(err) });
     }
   },
 

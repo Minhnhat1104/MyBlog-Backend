@@ -65,7 +65,7 @@ const imageController = {
       }
       res.status(200).json({ data: images });
     } catch (err) {
-      res.status(400).json({ msg: err });
+      res.status(400).json({ msg: errorToString(err) });
     }
   },
 
@@ -78,7 +78,7 @@ const imageController = {
       });
       res.status(200).json(image);
     } catch (err) {
-      res.status(400).json({ msg: err });
+      res.status(400).json({ msg: errorToString(err) });
     }
   },
 
@@ -94,7 +94,7 @@ const imageController = {
       }
       res.status(200).json({ msg: "delete successfully" });
     } catch (err) {
-      res.status(400).json({ msg: err });
+      res.status(400).json({ msg: errorToString(err) });
     }
   },
 
@@ -117,14 +117,14 @@ const imageController = {
 
       res.status(200).json({ msg: "update successfully" });
     } catch (err) {
-      res.status(400).json({ msg: err });
+      res.status(400).json({ msg: errorToString(err) });
     }
   },
 
   getStatisImage: async (req: Request, res: Response) => {
     try {
-      const imageId = parseInt(req?.query?.id || ("" as any));
-      if (!req?.query?.id) {
+      const imageId = parseInt(req?.params?.id || "");
+      if (!imageId) {
         throw new Error("Id not found!");
       }
 
@@ -138,9 +138,13 @@ const imageController = {
         throw new Error("Image not found!");
       }
 
-      res.send(image?.path);
+      if (!fs.existsSync(image?.path)) {
+        throw new Error("Image file is not existed!");
+      }
+
+      res.sendFile(image?.path);
     } catch (err) {
-      res.status(400).json({ msg: err });
+      res.status(400).json({ msg: errorToString(err) });
     }
   },
 };
