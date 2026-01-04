@@ -27,11 +27,7 @@ app.use("/v1/image", imageRouter);
 
 async function startServer() {
   try {
-    console.log("Starting MongoDB Sample MFlix API...");
-
-    // Connect to MongoDB database
-    console.log("Connecting to MySQL...");
-    // await connectToDatabase();
+    // Connect to MySQL database
     prismaConnectDB();
     console.log("Connected to MySQL successfully");
 

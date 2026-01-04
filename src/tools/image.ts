@@ -32,8 +32,8 @@ const storage = multer.diskStorage({
 
 export const upload = multer({ storage: storage });
 
-export async function getImageSize(buffer: Buffer) {
-  const metadata = await sharp(buffer).metadata();
+export async function getImageSize(filePath: string) {
+  const metadata = await sharp(filePath).metadata();
   return {
     width: metadata.width,
     height: metadata.height,
