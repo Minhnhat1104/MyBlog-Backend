@@ -45,7 +45,6 @@ const imageController = {
       if (req.query.size && req.query.page) {
         const size = Number(req.query.size);
         const page = Number(req.query.page);
-        console.log("Paging: ", size, page);
 
         images =
           (await prisma?.image.findMany({
