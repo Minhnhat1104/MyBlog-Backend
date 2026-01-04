@@ -1,18 +1,28 @@
-import multer from "multer";
-
 import { Request, Response } from "express";
 import { prisma } from "@/config/prisma.config";
 import { Image } from "generated/prisma/client";
-
-// const storage = getStorage();
-
-export const upload = multer({ dest: "uploads/" });
+import { getImageSize } from "@/tools/image";
+import path from "path";
 
 const imageController = {
   uploadImage: async (req: Request, res: Response) => {
     try {
-      console.log("🚀 ~ req?.file:", req?.file);
-      console.log("🚀 ~ req?.body:", req?.body);
+      const ext = path.extname(req?.file?.originalname || "");
+      if (!req?.file?.buffer) {
+        throw new Error("File buffer now found.");
+      }
+      const { width, height } = await getImageSize(req?.file?.buffer);
+
+      await prisma?.image.create({
+        data: {
+          ext,
+          width: width || 0,
+          height: height || 0,
+          path: req?.file?.path,
+          name: req?.body?.name,
+          creator_id: req?.body?.creator_id,
+        },
+      });
 
       return res.status(200).json({ msg: "Post image successfully!" });
     } catch (error) {

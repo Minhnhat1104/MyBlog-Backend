@@ -46,12 +46,22 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
+model Tag {
+  id        Int      @id @default(autoincrement())
+  label     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  images    Image[]
+}
+
 model Image {
   id         Int      @id @default(autoincrement())
   name       String
   ext        String
   width      Int
   height     Int
+  path       String
+  tags       Tag[]
   creator    User     @relation(fields: [creator_id], references: [id])
   creator_id Int
   created_at DateTime @default(now())
