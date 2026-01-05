@@ -41,7 +41,7 @@ const imageController = {
 
   getAllImage: async (req: Request, res: Response) => {
     try {
-      let images: Image[] | null = [];
+      let images: any[] | null = [];
       if (req.query.size && req.query.page) {
         const size = Number(req.query.size);
         const page = Number(req.query.page);
@@ -53,12 +53,38 @@ const imageController = {
             orderBy: {
               created_at: "desc",
             },
+            omit: {
+              creator_id: true,
+            },
+            include: {
+              creator: true,
+              tags: true,
+            },
           })) || [];
       } else {
         images =
           (await prisma?.image.findMany({
             orderBy: {
               created_at: "desc",
+            },
+            omit: {
+              creator_id: true,
+            },
+            include: {
+              creator: {
+                select: {
+                  id: true,
+                  first_name: true,
+                  last_name: true,
+                  avatar: {
+                    select: {
+                      path: true,
+                    },
+                  },
+                  email: true,
+                },
+              },
+              tags: true,
             },
           })) || [];
       }
@@ -142,6 +168,33 @@ const imageController = {
       }
 
       res.sendFile(image?.path);
+    } catch (err) {
+      res.status(400).json({ msg: errorToString(err) });
+    }
+  },
+
+  setFavoriteImage: async (req: Request, res: Response) => {
+    try {
+      let images: any[] | null = [];
+      const userId = Number(req.body.userId);
+      const imageId = Number(req.body.imageId);
+
+      if (!userId || !imageId) {
+        throw new Error("Invalid params");
+      }
+
+      const result = prisma?.user_Image_Favotire.create({
+        data: {
+          user_id: userId,
+          image_id: imageId,
+        },
+      });
+
+      if (!result) {
+        throw new Error("Set favorite image error");
+      }
+
+      res.status(200).json({ data: result, msg: "Successfully!" });
     } catch (err) {
       res.status(400).json({ msg: errorToString(err) });
     }

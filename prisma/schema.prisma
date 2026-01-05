@@ -36,14 +36,18 @@ datasource db {
 // 4) Không chạy Generate Prisma
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  username  String
-  password  String
-  admin     Boolean
-  images    Image[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              Int                   @id @default(autoincrement())
+  last_name       String                @default("")
+  first_name      String                @default("")
+  email           String                @unique
+  password        String
+  admin           Boolean
+  avatar_id       Int?                  @unique
+  avatar          Image?                @relation("UserAvatar", fields: [avatar_id], references: [id])
+  images          Image[]               @relation("UserImages")
+  favorite_images User_Image_Favotire[]
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
 }
 
 model Tag {
@@ -54,16 +58,42 @@ model Tag {
   images    Image[]
 }
 
+model Album {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  images      Image[]
+}
+
+model User_Image_Favotire {
+  id        Int      @id @default(autoincrement())
+  user_id   Int
+  user      User     @relation(fields: [user_id], references: [id])
+  image_id  Int
+  image     Image    @relation(fields: [image_id], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Image {
-  id         Int      @id @default(autoincrement())
-  name       String
-  ext        String
-  width      Int
-  height     Int
-  path       String
-  tags       Tag[]
-  creator    User     @relation(fields: [creator_id], references: [id])
-  creator_id Int
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id             Int                   @id @default(autoincrement())
+  name           String
+  ext            String
+  width          Int
+  height         Int
+  path           String
+  tags           Tag[]
+  favorite_users User_Image_Favotire[]
+  // album (1–n)
+  album_id       Int?
+  album_of       Album?                @relation(fields: [album_id], references: [id])
+  // avatar (1–1)
+  avatar_of      User?                 @relation("UserAvatar")
+  // images (1–n)
+  creator        User                  @relation("UserImages", fields: [creator_id], references: [id])
+  creator_id     Int
+  created_at     DateTime              @default(now())
+  updated_at     DateTime              @updatedAt
 }

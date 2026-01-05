@@ -13,10 +13,9 @@ const authController = {
       const hash = bcrypt.hashSync(req.body.password, saltRounds);
       const newUser = await prisma?.user.create({
         data: {
-          username: req.body.username,
+          email: req.body.email,
           password: hash,
           admin: false,
-          email: req.body.email,
         },
       });
 
@@ -32,7 +31,7 @@ const authController = {
   generateAccessToken: (user: any) => {
     return jwt.sign(
       {
-        username: user.username,
+        email: user.email,
         admin: user.admin,
         id: user.id,
       },
@@ -44,7 +43,7 @@ const authController = {
   generateRefreshToken: (user: any): string => {
     return jwt.sign(
       {
-        username: user.username,
+        email: user.email,
         admin: user.admin,
         id: user.id,
       },
@@ -57,12 +56,12 @@ const authController = {
     try {
       const user = await prisma?.user.findFirst({
         where: {
-          username: req.body.username || "",
+          email: req.body.email || "",
         },
       });
 
       if (!user) {
-        return res.status(404).json({ msg: "Wrong username" });
+        return res.status(404).json({ msg: "Wrong email" });
       }
       const validPassword = await bcrypt.compareSync(
         req.body.password,

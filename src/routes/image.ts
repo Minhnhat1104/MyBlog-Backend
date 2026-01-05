@@ -11,25 +11,31 @@ router.get("/file/:id", imageController.getStatisImage);
 
 router.get(
   "/:id",
-  // middlewareController.verifyToken,
+  middlewareController.verifyToken,
   imageController.getImageById
 );
 
 router.patch(
   "/update/:id",
-  // middlewareController.verifyToken,
+  middlewareController.verifyToken,
   imageController.updateImage
 );
 router.post(
   "/upload",
-  // middlewareController.verifyToken,
+  middlewareController.verifyToken,
   upload.single("imageFile"),
   imageController.uploadImage
 );
 router.delete(
   "/delete/:id",
-  // middlewareController.verifyToken,
+  middlewareController.verifyToken,
   imageController.deleteImage
+);
+
+router.post(
+  "/favorite",
+  middlewareController.verifyToken,
+  imageController.setFavoriteImage
 );
 
 export default router;
