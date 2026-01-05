@@ -6,7 +6,7 @@
 
 */
 -- AlterTable
-ALTER TABLE `Image` ADD COLUMN `post_id` INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE `Image` ADD COLUMN `album_id` INTEGER NULL;
 
 -- AlterTable
 ALTER TABLE `User` DROP COLUMN `username`,
@@ -50,4 +50,4 @@ ALTER TABLE `User_Image_Favotire` ADD CONSTRAINT `User_Image_Favotire_user_id_fk
 ALTER TABLE `User_Image_Favotire` ADD CONSTRAINT `User_Image_Favotire_image_id_fkey` FOREIGN KEY (`image_id`) REFERENCES `Image`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Image` ADD CONSTRAINT `Image_post_id_fkey` FOREIGN KEY (`post_id`) REFERENCES `Album`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Image` ADD CONSTRAINT `Image_album_id_fkey` FOREIGN KEY (`album_id`) REFERENCES `Album`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;

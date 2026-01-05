@@ -13,6 +13,8 @@ const authController = {
       const hash = bcrypt.hashSync(req.body.password, saltRounds);
       const newUser = await prisma?.user.create({
         data: {
+          first_name: req.body.firstName,
+          last_name: req.body.lastName,
           email: req.body.email,
           password: hash,
           admin: false,
