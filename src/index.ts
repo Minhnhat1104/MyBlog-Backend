@@ -2,11 +2,12 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import { default as authRouter } from "@/routes/auth";
-import { default as imageRouter } from "@/routes/image";
+import authRouter from "@/routes/auth";
+import imageRouter from "@/routes/image";
 // Import the functions you need from the SDKs you need
 import "dotenv/config";
 import { prismaConnectDB } from "./config/prisma.config";
+import albumRouter from "./routes/album";
 
 dotenv.config();
 const app = express();
@@ -24,6 +25,7 @@ app.use(express.json());
 //routes
 app.use("/v1/auth", authRouter);
 app.use("/v1/image", imageRouter);
+app.use("/v1/album", albumRouter);
 
 async function startServer() {
   try {
