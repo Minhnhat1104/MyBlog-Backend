@@ -41,54 +41,50 @@ const imageController = {
 
   getAllImage: async (req: Request, res: Response) => {
     try {
-      let images: any[] | null = [];
-      if (req.query.size && req.query.page) {
-        const size = Number(req.query.size);
-        const page = Number(req.query.page);
+      const size = Number(req.query.size);
+      const page = Number(req.query.page);
+      const userId = Number(req?.user?.id);
 
-        images =
-          (await prisma?.image.findMany({
-            skip: size * (page - 1),
-            take: size,
-            orderBy: {
-              created_at: "desc",
-            },
-            omit: {
-              creator_id: true,
-            },
-            include: {
-              creator: true,
-              tags: true,
-            },
-          })) || [];
-      } else {
-        images =
-          (await prisma?.image.findMany({
-            orderBy: {
-              created_at: "desc",
-            },
-            omit: {
-              creator_id: true,
-            },
-            include: {
-              creator: {
-                select: {
-                  id: true,
-                  first_name: true,
-                  last_name: true,
-                  avatar: {
-                    select: {
-                      path: true,
-                    },
-                  },
-                  email: true,
-                },
-              },
-              tags: true,
-            },
-          })) || [];
+      if (!size || !page || !userId) {
+        throw new Error("Invalid params!");
       }
-      res.status(200).json({ rows: images });
+
+      const images =
+        (await prisma?.image.findMany({
+          skip: size * (page - 1),
+          take: size,
+          orderBy: {
+            created_at: "desc",
+          },
+          omit: {
+            creator_id: true,
+          },
+          include: {
+            creator: true,
+            tags: true,
+            favorite_users: {
+              where: {
+                user_id: userId, // user đang login
+              },
+              select: {
+                id: true,
+              },
+              take: 1,
+            },
+          },
+        })) || [];
+
+      if (!images) {
+        throw new Error("Get images failed!");
+      }
+
+      const mappedImages = images.map((image) => ({
+        ...image,
+        favorite: image.favorite_users.length > 0,
+        favorite_users: undefined, // optional: xoá cho sạch response
+      }));
+
+      res.status(200).json({ rows: mappedImages });
     } catch (err) {
       res.status(400).json({ msg: errorToString(err) });
     }
