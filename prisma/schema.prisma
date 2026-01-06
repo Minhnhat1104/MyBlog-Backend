@@ -45,36 +45,41 @@ model User {
   avatar_id       Int?                  @unique
   avatar          Image?                @relation("UserAvatar", fields: [avatar_id], references: [id])
   images          Image[]               @relation("UserImages")
+  albums          Album[]
   favorite_images User_Image_Favotire[]
-  createdAt       DateTime              @default(now())
-  updatedAt       DateTime              @updatedAt
+  created_at      DateTime              @default(now())
+  updated_at      DateTime              @default(now()) @updatedAt
 }
 
 model Tag {
-  id        Int      @id @default(autoincrement())
-  label     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  images    Image[]
+  id         Int      @id @default(autoincrement())
+  label      String   @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+  images     Image[]
 }
 
 model Album {
   id          Int      @id @default(autoincrement())
   name        String   @unique
   description String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  creator_id  Int
+  creator     User     @relation(fields: [creator_id], references: [id])
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now()) @updatedAt
   images      Image[]
 }
 
 model User_Image_Favotire {
-  id        Int      @id @default(autoincrement())
-  user_id   Int
-  user      User     @relation(fields: [user_id], references: [id])
-  image_id  Int
-  image     Image    @relation(fields: [image_id], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  user       User     @relation(fields: [user_id], references: [id])
+  image_id   Int
+  image      Image    @relation(fields: [image_id], references: [id])
+  created_at DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@unique([user_id, image_id])
 }
 
 model Image {
@@ -95,5 +100,5 @@ model Image {
   creator        User                  @relation("UserImages", fields: [creator_id], references: [id])
   creator_id     Int
   created_at     DateTime              @default(now())
-  updated_at     DateTime              @updatedAt
+  updated_at     DateTime              @default(now()) @updatedAt
 }
