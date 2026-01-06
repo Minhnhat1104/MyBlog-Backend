@@ -9,8 +9,13 @@ albumRouter.get("/list", albumController.getAlbums);
 albumRouter.post(
   "/create",
   upload.array("photos"),
+  middlewareController.verifyToken,
   albumController.createAlbum
 );
-albumRouter.post("/delete", albumController.deleteAlbum);
+albumRouter.post(
+  "/delete",
+  middlewareController.verifyToken,
+  albumController.deleteAlbum
+);
 
 export default albumRouter;

@@ -12,8 +12,7 @@ export const albumController = {
     try {
       // req.files is array of `photos` files
       const { name, description } = req?.body;
-      const userId = Number(req?.user?.id);
-      const creator_id = parseInt(req?.body?.creator_id);
+      const creator_id = Number(req?.user?.id);
       if (!creator_id) {
         throw new Error("Missing creator_id.");
       }
@@ -35,7 +34,7 @@ export const albumController = {
             name: req?.body?.name,
             creator: {
               connect: {
-                id: userId,
+                id: creator_id,
               },
             },
           });
@@ -46,7 +45,7 @@ export const albumController = {
         data: {
           name,
           description,
-          creator_id: userId,
+          creator_id: creator_id,
           images: {
             create: images,
           },
