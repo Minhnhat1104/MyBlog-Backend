@@ -88,7 +88,7 @@ const imageController = {
             },
           })) || [];
       }
-      res.status(200).json({ data: images });
+      res.status(200).json({ rows: images });
     } catch (err) {
       res.status(400).json({ msg: errorToString(err) });
     }
@@ -195,7 +195,7 @@ const imageController = {
           throw new Error("Set favorite image error");
         }
 
-        res.status(200).json({ data: result, msg: "Successfully!" });
+        res.status(200).json({ rows: result, msg: "Successfully!" });
       } else {
         const result = prisma?.user_Image_Favotire.deleteMany({
           where: {
@@ -208,7 +208,7 @@ const imageController = {
           throw new Error("Set favorite image error");
         }
 
-        res.status(200).json({ data: result, msg: "Successfully!" });
+        res.status(200).json({ rows: result, msg: "Successfully!" });
       }
     } catch (err) {
       res.status(400).json({ msg: errorToString(err) });

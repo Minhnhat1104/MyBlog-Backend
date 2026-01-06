@@ -88,7 +88,7 @@ export const albumController = {
           },
         })) || [];
 
-      res.status(200).json({ data: albums });
+      res.status(200).json({ rows: albums });
     } catch (err) {
       res.status(400).json({ msg: errorToString(err) });
     }

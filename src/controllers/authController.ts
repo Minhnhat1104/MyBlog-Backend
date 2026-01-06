@@ -83,7 +83,7 @@ const authController = {
         sameSite: "strict",
       });
       const { password, ...other } = user;
-      res.status(200).json({ data: { ...other, accessToken: accessToken } });
+      res.status(200).json({ rows: { ...other, accessToken: accessToken } });
     } catch (err) {
       res.status(400).json({ msg: errorToString(err) });
     }
@@ -131,7 +131,7 @@ const authController = {
         });
         res
           .status(200)
-          .json({ data: { ...user, accessToken: newAccessToken } });
+          .json({ rows: { ...user, accessToken: newAccessToken } });
       }
     );
   },
