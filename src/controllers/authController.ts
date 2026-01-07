@@ -38,7 +38,7 @@ const authController = {
         id: user.id,
       },
       process.env.ACCESS_TOKEN_KEY || "",
-      { expiresIn: "20s" }
+      { expiresIn: "15m" }
     );
   },
 
@@ -50,7 +50,7 @@ const authController = {
         id: user.id,
       },
       process.env.REFRESH_TOKEN_KEY || "",
-      { expiresIn: "365d" }
+      { expiresIn: "30d" }
     );
   },
 

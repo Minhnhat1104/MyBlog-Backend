@@ -180,7 +180,7 @@ const imageController = {
       }
 
       if (favorite) {
-        const result = prisma?.user_Image_Favotire.create({
+        const result = await prisma?.user_Image_Favotire.create({
           data: {
             user_id: userId,
             image_id: imageId,
@@ -191,9 +191,9 @@ const imageController = {
           throw new Error("Set favorite image error");
         }
 
-        res.status(200).json({ rows: result, msg: "Successfully!" });
+        return res.status(200).json({ rows: result, msg: "Successfully! 11" });
       } else {
-        const result = prisma?.user_Image_Favotire.deleteMany({
+        const result = await prisma?.user_Image_Favotire.deleteMany({
           where: {
             user_id: userId,
             image_id: imageId,
@@ -204,7 +204,7 @@ const imageController = {
           throw new Error("Set favorite image error");
         }
 
-        res.status(200).json({ rows: result, msg: "Successfully!" });
+        return res.status(200).json({ rows: result, msg: "Successfully!" });
       }
     } catch (err) {
       res.status(400).json({ msg: errorToString(err) });
