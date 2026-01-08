@@ -36,19 +36,21 @@ datasource db {
 // 4) Không chạy Generate Prisma
 
 model User {
-  id              Int                   @id @default(autoincrement())
-  last_name       String                @default("")
-  first_name      String                @default("")
-  email           String                @unique
-  password        String
-  admin           Boolean
-  avatar_id       Int?                  @unique
-  avatar          Image?                @relation("UserAvatar", fields: [avatar_id], references: [id])
-  images          Image[]               @relation("UserImages")
-  albums          Album[]
-  favorite_images User_Image_Favotire[]
-  created_at      DateTime              @default(now())
-  updated_at      DateTime              @default(now()) @updatedAt
+  id                     Int                   @id @default(autoincrement())
+  last_name              String                @default("")
+  first_name             String                @default("")
+  email                  String                @unique
+  password               String
+  admin                  Boolean
+  avatar_id              Int?                  @unique
+  avatar                 Image?                @relation("UserAvatar", fields: [avatar_id], references: [id])
+  images                 Image[]               @relation("UserImages")
+  albums                 Album[]
+  password_reset_token   String?               @unique
+  password_reset_expired DateTime?
+  favorite_images        User_Image_Favotire[]
+  created_at             DateTime              @default(now())
+  updated_at             DateTime              @default(now()) @updatedAt
 }
 
 model Tag {

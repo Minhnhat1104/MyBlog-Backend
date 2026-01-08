@@ -3,6 +3,8 @@ import jwt, { VerifyErrors } from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
 import { prisma } from "@/config/prisma.config";
 import { errorToString } from "@/tools/error";
+import crypto from "crypto";
+import dayjs from "dayjs";
 
 const refreshTokens: string[] = [];
 
@@ -97,7 +99,69 @@ const authController = {
       refreshTokens.filter((token) => token !== req.cookies.refreshToken);
       res.status(200).json({ msg: "logout successfully" });
     } catch (err) {
-      console.log(err);
+      res.status(400).json({ msg: errorToString(err) });
+    }
+  },
+
+  sendResetPasswordEmail: async (req: Request, res: Response) => {
+    try {
+      const email = req?.body?.email;
+      const token = crypto.randomBytes(32).toString("hex");
+      const hashedToken = crypto
+        .createHash("sha256")
+        .update(token)
+        .digest("hex");
+
+      const result = await prisma?.user.update({
+        where: {
+          email: email,
+        },
+        data: {
+          password_reset_token: hashedToken,
+          password_reset_expired: dayjs().add(15, "m")?.toDate(),
+        },
+      });
+
+      if (!result) {
+        throw new Error("Request reset password failed");
+      }
+
+      res.status(200).json({ msg: "Successfully", data: { token } });
+    } catch (err) {
+      res.status(400).json({ msg: errorToString(err) });
+    }
+  },
+
+  resetPassword: async (req: Request, res: Response) => {
+    try {
+      const token = req.body.token;
+      const password = req.body.password;
+
+      if (!token || !password) {
+        throw new Error("Invalid params.");
+      }
+
+      const hashedToken = crypto
+        .createHash("sha256")
+        .update(token)
+        .digest("hex");
+
+      const result = await prisma?.user.findUnique({
+        where: {
+          password_reset_token: hashedToken,
+          password_reset_expired: {
+            gte: new Date(),
+          },
+        },
+      });
+
+      if (!result) {
+        throw new Error("Invalid token.");
+      }
+
+      res.status(200).json({ msg: "Successfully" });
+    } catch (err) {
+      res.status(400).json({ msg: errorToString(err) });
     }
   },
 

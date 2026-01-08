@@ -44,6 +44,7 @@ const imageController = {
       const size = Number(req.query.size);
       const page = Number(req.query.page);
       const userId = Number(req?.user?.id);
+      const my = req?.body?.my;
 
       if (!size || !page || !userId) {
         throw new Error("Invalid params!");
@@ -53,6 +54,9 @@ const imageController = {
         (await prisma?.image.findMany({
           skip: size * (page - 1),
           take: size,
+          where: {
+            creator_id: my ? userId : undefined,
+          },
           orderBy: {
             created_at: "desc",
           },
