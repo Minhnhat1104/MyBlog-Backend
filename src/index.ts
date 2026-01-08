@@ -26,7 +26,7 @@ app.use(express.json());
 
 //routes
 app.use("/v1/auth", authRouter);
-app.use("/v1/user", middlewareController.verifyToken, userRouter);
+app.use("/v1/user", userRouter);
 app.use("/v1/image", imageRouter);
 app.use("/v1/album", albumRouter);
 

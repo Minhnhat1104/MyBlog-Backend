@@ -10,7 +10,7 @@ const userAvatarPlaceholder = path.join(
   process.cwd(),
   "src",
   "assets",
-  "UserPlacefolder.png"
+  "UserPlaceholder.png"
 );
 
 const userController = {
@@ -21,6 +21,8 @@ const userController = {
       if (!userId) {
         throw new Error("Invalid request!");
       }
+
+      console.log(fs.existsSync(userAvatarPlaceholder));
 
       const result = await prisma?.user.findUnique({
         where: {
@@ -36,7 +38,7 @@ const userController = {
       });
 
       if (!result || !result?.avatar?.path) {
-        res?.sendFile(userAvatarPlaceholder);
+        return res?.sendFile(userAvatarPlaceholder);
       }
 
       res.sendFile(result?.avatar?.path || "");
