@@ -33,7 +33,7 @@ const authController = {
     }
   },
 
-  generateAccessToken: (user: User) => {
+  generateAccessToken: (user: any) => {
     return jwt.sign(
       {
         email: user.email,
@@ -48,7 +48,7 @@ const authController = {
     );
   },
 
-  generateRefreshToken: (user: User): string => {
+  generateRefreshToken: (user: any): string => {
     return jwt.sign(
       {
         email: user.email,
@@ -82,8 +82,15 @@ const authController = {
       if (!validPassword) {
         return res.status(404).json({ msg: "Wrong password" });
       }
-      const accessToken = authController.generateAccessToken(user);
-      const refreshToken = authController.generateRefreshToken(user);
+
+      const {
+        password: temp,
+        password_reset_expired,
+        password_reset_token,
+        ...tokenPayload
+      } = user;
+      const accessToken = authController.generateAccessToken(tokenPayload);
+      const refreshToken = authController.generateRefreshToken(tokenPayload);
       refreshTokens.push(refreshToken);
       res.cookie("refreshToken", refreshToken, {
         // httpOnly: true,
@@ -91,8 +98,10 @@ const authController = {
         path: "/",
         sameSite: "strict",
       });
-      const { password, ...other } = user;
-      res.status(200).json({ rows: { ...other, accessToken: accessToken } });
+
+      res
+        .status(200)
+        .json({ rows: { ...tokenPayload, accessToken: accessToken } });
     } catch (err) {
       res.status(400).json({ msg: errorToString(err) });
     }
@@ -183,16 +192,34 @@ const authController = {
     jwt.verify(
       refreshToken,
       process.env.REFRESH_TOKEN_KEY || "",
-      (err: VerifyErrors | null, user: any) => {
+      async (err: VerifyErrors | null, user: any) => {
         if (err) {
           console.log(err);
           return res
             .status(401)
             .json({ msg: "Your login information is invalid.", err });
         }
-        refreshTokens.filter((token) => token !== refreshToken);
-        const newAccessToken = authController.generateAccessToken(user);
-        const newRefreshToken = authController.generateRefreshToken(user);
+
+        // refreshTokens.filter((token) => token !== refreshToken);
+        const originUser = await prisma?.user.findUnique({
+          omit: {
+            password: true,
+            password_reset_expired: true,
+            password_reset_token: true,
+          },
+          where: {
+            id: user?.id,
+          },
+        });
+
+        if (!originUser) {
+          return res
+            .status(401)
+            .json({ msg: "Your login information is invalid.", err });
+        }
+
+        const newAccessToken = authController.generateAccessToken(originUser);
+        const newRefreshToken = authController.generateRefreshToken(originUser);
         refreshTokens.push(newRefreshToken);
         res.cookie("refreshToken", newRefreshToken, {
           // httpOnly: true,
@@ -202,7 +229,7 @@ const authController = {
         });
         res
           .status(200)
-          .json({ rows: { ...user, accessToken: newAccessToken } });
+          .json({ rows: { ...originUser, accessToken: newAccessToken } });
       }
     );
   },

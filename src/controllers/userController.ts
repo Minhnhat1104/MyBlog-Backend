@@ -90,14 +90,11 @@ const userController = {
 
   updateProfile: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const firstName = req?.body?.first_name;
-      const lastName = req?.body?.last_name;
-      // const email = req?.body?.email;
-      const ext = path.extname(req?.file?.originalname || "");
+      const firstName = req?.body?.firstName;
+      const lastName = req?.body?.lastName;
       const userId = Number(req?.user?.id || "");
-      if (!req?.file?.path || !fs.existsSync(req?.file?.path || "")) {
-        throw new Error("File not found.");
-      }
+      // const email = req?.body?.email;
+
       if (!firstName || !lastName || !userId) {
         throw new Error("Invalid request!");
       }
