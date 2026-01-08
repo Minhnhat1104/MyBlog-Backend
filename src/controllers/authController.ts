@@ -201,7 +201,7 @@ const authController = {
         }
 
         // refreshTokens.filter((token) => token !== refreshToken);
-        const originUser = await prisma?.user.findUnique({
+        const nTokenPayload = await prisma?.user.findUnique({
           omit: {
             password: true,
             password_reset_expired: true,
@@ -212,14 +212,16 @@ const authController = {
           },
         });
 
-        if (!originUser) {
+        if (!nTokenPayload) {
           return res
             .status(401)
             .json({ msg: "Your login information is invalid.", err });
         }
 
-        const newAccessToken = authController.generateAccessToken(originUser);
-        const newRefreshToken = authController.generateRefreshToken(originUser);
+        const newAccessToken =
+          authController.generateAccessToken(nTokenPayload);
+        const newRefreshToken =
+          authController.generateRefreshToken(nTokenPayload);
         refreshTokens.push(newRefreshToken);
         res.cookie("refreshToken", newRefreshToken, {
           // httpOnly: true,
@@ -229,7 +231,7 @@ const authController = {
         });
         res
           .status(200)
-          .json({ rows: { ...originUser, accessToken: newAccessToken } });
+          .json({ rows: { ...nTokenPayload, accessToken: newAccessToken } });
       }
     );
   },
