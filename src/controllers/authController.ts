@@ -5,6 +5,7 @@ import { prisma } from "@/config/prisma.config";
 import { errorToString } from "@/tools/error";
 import crypto from "crypto";
 import dayjs from "dayjs";
+import { User } from "generated/prisma/client";
 
 const refreshTokens: string[] = [];
 
@@ -32,10 +33,13 @@ const authController = {
     }
   },
 
-  generateAccessToken: (user: any) => {
+  generateAccessToken: (user: User) => {
     return jwt.sign(
       {
         email: user.email,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        avatar_id: user.avatar_id,
         admin: user.admin,
         id: user.id,
       },
@@ -44,10 +48,13 @@ const authController = {
     );
   },
 
-  generateRefreshToken: (user: any): string => {
+  generateRefreshToken: (user: User): string => {
     return jwt.sign(
       {
         email: user.email,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        avatar_id: user.avatar_id,
         admin: user.admin,
         id: user.id,
       },

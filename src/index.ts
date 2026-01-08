@@ -8,6 +8,8 @@ import imageRouter from "@/routes/image";
 import "dotenv/config";
 import { prismaConnectDB } from "./config/prisma.config";
 import albumRouter from "./routes/album";
+import userRouter from "./routes/user";
+import middlewareController from "./controllers/middlewareController";
 
 dotenv.config();
 const app = express();
@@ -24,6 +26,7 @@ app.use(express.json());
 
 //routes
 app.use("/v1/auth", authRouter);
+app.use("/v1/user", middlewareController.verifyToken, userRouter);
 app.use("/v1/image", imageRouter);
 app.use("/v1/album", albumRouter);
 
