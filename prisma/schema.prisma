@@ -91,6 +91,7 @@ model Image {
   width          Int
   height         Int
   path           String
+  editedPath     String?
   tags           Tag[]
   favorite_users User_Image_Favotire[]
   // album (1–n)

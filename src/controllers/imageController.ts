@@ -61,10 +61,19 @@ const imageController = {
             created_at: "desc",
           },
           omit: {
+            path: true,
+            editedPath: true,
             creator_id: true,
           },
           include: {
-            creator: true,
+            creator: {
+              select: {
+                first_name: true,
+                last_name: true,
+                email: true,
+                id: true,
+              },
+            },
             tags: true,
             favorite_users: {
               where: {
@@ -195,7 +204,7 @@ const imageController = {
           throw new Error("Set favorite image error");
         }
 
-        return res.status(200).json({ rows: result, msg: "Successfully! 11" });
+        return res.status(200).json({ rows: result, msg: "Successfully!" });
       } else {
         const result = await prisma?.user_Image_Favotire.deleteMany({
           where: {
@@ -210,6 +219,66 @@ const imageController = {
 
         return res.status(200).json({ rows: result, msg: "Successfully!" });
       }
+    } catch (err) {
+      res.status(400).json({ msg: errorToString(err) });
+    }
+  },
+
+  setEditImage: async (req: Request, res: Response) => {
+    try {
+      const userId = Number(req?.user?.id);
+      const imageId = Number(req.body.imageId);
+      const filePath = req?.file?.path;
+      if (!filePath || !fs.existsSync(filePath || "")) {
+        throw new Error("File not found.");
+      }
+
+      if (!userId || !imageId) {
+        throw new Error("Invalid params");
+      }
+
+      const result = await prisma?.image.update({
+        where: {
+          id: imageId,
+        },
+        data: {
+          editedPath: filePath,
+        },
+      });
+
+      if (!result) {
+        throw new Error("Save image failed");
+      }
+
+      return res.status(200).json({ rows: result, msg: "Successfully!" });
+    } catch (err) {
+      res.status(400).json({ msg: errorToString(err) });
+    }
+  },
+
+  resetToOriginImage: async (req: Request, res: Response) => {
+    try {
+      const userId = Number(req?.user?.id);
+      const imageId = Number(req.body.imageId);
+
+      if (!userId || !imageId) {
+        throw new Error("Invalid params");
+      }
+
+      const result = await prisma?.image.update({
+        where: {
+          id: imageId,
+        },
+        data: {
+          editedPath: null,
+        },
+      });
+
+      if (!result) {
+        throw new Error("Save image failed");
+      }
+
+      return res.status(200).json({ rows: result, msg: "Successfully!" });
     } catch (err) {
       res.status(400).json({ msg: errorToString(err) });
     }

@@ -37,4 +37,17 @@ router.post(
   imageController.setFavoriteImage
 );
 
+router.post(
+  "/edit",
+  middlewareController.verifyToken,
+  upload.single("photo"),
+  imageController.setEditImage
+);
+
+router.post(
+  "/reset",
+  middlewareController.verifyToken,
+  imageController.resetToOriginImage
+);
+
 export default router;
