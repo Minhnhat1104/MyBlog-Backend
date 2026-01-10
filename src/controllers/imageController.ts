@@ -172,11 +172,13 @@ const imageController = {
         throw new Error("Image not found!");
       }
 
-      if (!fs.existsSync(image?.path)) {
+      const imagePath = image?.editedPath || image?.path;
+
+      if (!fs.existsSync(imagePath)) {
         throw new Error("Image file is not existed!");
       }
 
-      res.sendFile(image?.path);
+      res.sendFile(imagePath);
     } catch (err) {
       res.status(400).json({ msg: errorToString(err) });
     }
