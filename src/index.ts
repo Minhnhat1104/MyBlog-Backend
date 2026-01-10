@@ -33,7 +33,10 @@ app.use("/v1/album", albumRouter);
 async function startServer() {
   try {
     // Connect to MySQL database
-    prismaConnectDB();
+    const connectSuccess = prismaConnectDB();
+    if (!connectSuccess) {
+      throw new Error("Database connect failed!");
+    }
     console.log("Connected to MySQL successfully");
 
     // Start the Express server

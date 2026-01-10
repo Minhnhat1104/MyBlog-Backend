@@ -14,6 +14,8 @@ export const prismaConnectDB = () => {
   });
 
   prisma = new PrismaClient({ adapter });
+
+  return !!prisma;
 };
 
 export { prisma };
