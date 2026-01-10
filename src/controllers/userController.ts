@@ -5,6 +5,7 @@ import { errorToString } from "@/tools/error";
 import path from "path";
 import fs, { lstat } from "fs";
 import { getImageSize } from "@/tools/image";
+import { BCRYPT_ROUNDS } from "@/config/constants";
 
 const userAvatarPlaceholder = path.join(
   process.cwd(),
@@ -114,6 +115,56 @@ const userController = {
       }
 
       res.status(200).json({ msg: "Update successfully" });
+    } catch (err) {
+      res.status(400).json({ msg: errorToString(err) });
+    }
+  },
+
+  changePassword: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const oldPassword = req?.body?.oldPassword;
+      const newPassword = req?.body?.newPassword;
+      const userId = req?.user?.id;
+
+      if (!oldPassword || !newPassword) {
+        throw new Error("Invalid params!");
+      }
+
+      const result = await prisma?.user.findUnique({
+        where: {
+          id: userId,
+        },
+      });
+
+      if (!result) {
+        throw new Error("User not found");
+      }
+
+      const isOldPassCorrect = await bcrypt.compareSync(
+        oldPassword,
+        result?.password
+      );
+
+      if (!isOldPassCorrect) {
+        throw new Error("Incorrect current password!");
+      }
+
+      const hash = bcrypt.hashSync(newPassword, BCRYPT_ROUNDS);
+
+      await prisma?.user?.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          password: hash,
+        },
+      });
+
+      if (!result) {
+        throw new Error("Change password failed");
+      }
+
+      res.status(200).json({ msg: "Change password successfully" });
     } catch (err) {
       res.status(400).json({ msg: errorToString(err) });
     }

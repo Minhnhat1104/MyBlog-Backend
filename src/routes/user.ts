@@ -17,5 +17,10 @@ userRouter.post(
   middlewareController.verifyToken,
   userController.updateProfile
 );
+userRouter.post(
+  "/change-password",
+  middlewareController.verifyToken,
+  userController.changePassword
+);
 
 export default userRouter;

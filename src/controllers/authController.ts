@@ -6,14 +6,14 @@ import { errorToString } from "@/tools/error";
 import crypto from "crypto";
 import dayjs from "dayjs";
 import { User } from "generated/prisma/client";
+import { BCRYPT_ROUNDS } from "@/config/constants";
 
 const refreshTokens: string[] = [];
 
 const authController = {
   registerUser: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const saltRounds = 10;
-      const hash = bcrypt.hashSync(req.body.password, saltRounds);
+      const hash = bcrypt.hashSync(req.body.password, BCRYPT_ROUNDS);
       const newUser = await prisma?.user.create({
         data: {
           first_name: req.body.firstName,
