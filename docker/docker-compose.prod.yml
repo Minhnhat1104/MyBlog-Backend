@@ -1,0 +1,46 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_dev
+    restart: unless-stopped
+    ports:
+      - "${MYSQL_PORT}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      # image mysql:8.0 auto run /docker-entrypoint-initdb.d/*.sql when init, but now we use prisma instead
+      # - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  backend:
+    container_name: backend_production
+    build:
+      context: ../
+      dockerfile: Dockerfile.production
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      NODE_ENV: development
+    depends_on:
+      mysql: # quyết định thứ tự start container
+        condition: service_healthy
+        restart: true
+
+    volumes:
+      - ../:/app # 2-way bind with folder /app in Container
+      - /app/node_modules # anonymous volume, ko bind mount với máy thực
+    command: sh -c "npx prisma migrate dev --name init && npm run build && npm run production" # create a shell and run command, CMD in Dockerfile is ignored
+
+volumes:
+  mysql_data: # declare Docker volume (1 folder)
