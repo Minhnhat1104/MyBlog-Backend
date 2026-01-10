@@ -158,6 +158,8 @@ const imageController = {
   getStatisImage: async (req: Request, res: Response) => {
     try {
       const imageId = parseInt(req?.params?.id || "");
+      const origin = req?.query?.origin === "true";
+
       if (!imageId) {
         throw new Error("Id not found!");
       }
@@ -172,7 +174,7 @@ const imageController = {
         throw new Error("Image not found!");
       }
 
-      const imagePath = image?.editedPath || image?.path;
+      const imagePath = origin ? image?.path : image?.editedPath || image?.path;
 
       if (!fs.existsSync(imagePath)) {
         throw new Error("Image file is not existed!");
@@ -244,6 +246,7 @@ const imageController = {
           id: imageId,
         },
         data: {
+          edit_at: new Date(),
           editedPath: filePath,
         },
       });

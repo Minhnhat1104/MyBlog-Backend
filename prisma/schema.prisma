@@ -92,6 +92,7 @@ model Image {
   height         Int
   path           String
   editedPath     String?
+  edit_at        DateTime?
   tags           Tag[]
   favorite_users User_Image_Favotire[]
   // album (1–n)
