@@ -14,7 +14,12 @@ const authController = {
   registerUser: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const hash = bcrypt.hashSync(req.body.password, BCRYPT_ROUNDS);
-      const newUser = await prisma?.user.create({
+      const result = await prisma?.user.create({
+        omit: {
+          password: true,
+          password_reset_token: true,
+          password_reset_expired: true,
+        },
         data: {
           first_name: req.body.firstName,
           last_name: req.body.lastName,
@@ -24,9 +29,8 @@ const authController = {
         },
       });
 
-      if (newUser) {
-        const { password, ...rest } = newUser;
-        res.status(202).json({ user: rest });
+      if (result) {
+        res.status(202).json({ msg: "Register successfully!", user: result });
       }
     } catch (err) {
       res.status(400).json({ msg: errorToString(err) });
@@ -189,6 +193,7 @@ const authController = {
     // if (!refreshTokens.includes(refreshToken)) {
     //   return res.status(403).json({msg: "Refresh is not valid"});
     // }
+
     jwt.verify(
       refreshToken,
       process.env.REFRESH_TOKEN_KEY || "",
