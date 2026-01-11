@@ -3,8 +3,11 @@ FROM node:jod-alpine
 WORKDIR /app
 
 # Đang build image, cope file trước để cài thư viện
-COPY package*.json ./
+# COPY package*.json ./
+COPY . .
+# run clean install
 RUN npm install
+RUN npm run build
 
 # Chạy lúc container start, đã map thư mục backend > app
-CMD ["npm", "run" ,"dev"]
+CMD ["npm", "run" ,"production"]

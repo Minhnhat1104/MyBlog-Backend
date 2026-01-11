@@ -6,8 +6,9 @@
   "scripts": {
     "start": "nodemon",
     "dev": "nodemon",
-    "build": "tsup src/index.ts --out-dir built --format cjs",
+    "build": "npx tsup src/index.ts --out-dir built --format cjs",
     "production": "node built/index.js",
+    "docker:production": "docker compose -f docker/docker-compose.prod.yml up",
     "docker:start": "docker desktop start && docker compose -f docker/docker-compose.yml up",
     "docker:up": "docker compose -f docker/docker-compose.yml up",
     "docker:detach": "docker compose -f docker/docker-compose.yml up -d",

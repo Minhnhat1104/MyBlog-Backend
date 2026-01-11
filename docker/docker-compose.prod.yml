@@ -23,24 +23,22 @@ services:
       timeout: 10s
 
   backend:
+    image: backend:prod
     container_name: backend_production
     build:
       context: ../
       dockerfile: Dockerfile.production
-    restart: unless-stopped
+    # restart: unless-stopped
     ports:
       - "8000:8000"
     environment:
       NODE_ENV: development
+    env_file:
+      - ../.env
     depends_on:
       mysql: # quyết định thứ tự start container
         condition: service_healthy
         restart: true
-
-    volumes:
-      - ../:/app # 2-way bind with folder /app in Container
-      - /app/node_modules # anonymous volume, ko bind mount với máy thực
-    command: sh -c "npx prisma migrate dev --name init && npm run build && npm run production" # create a shell and run command, CMD in Dockerfile is ignored
 
 volumes:
   mysql_data: # declare Docker volume (1 folder)
