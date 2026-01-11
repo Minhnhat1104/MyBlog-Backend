@@ -11,3 +11,9 @@
 
 1. Change image of backend service in docker/-compose.prod.yml to: minhnhat1104/backend:1.0
 2. npm run docker: production
+
+# Docker command
+
+- Show stoped container: docker ps -a
+- Stop container: docker kill [TÊN_HOẶC_ID_CONTAINER]
+- Remove container: docker rm [TÊN_HOẶC_ID_CONTAINER]
