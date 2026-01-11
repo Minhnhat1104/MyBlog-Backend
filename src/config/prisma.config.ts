@@ -6,7 +6,7 @@ let prisma: PrismaClient | null = null;
 export const prismaConnectDB = () => {
   const adapter = new PrismaMariaDb({
     host: process.env.MYSQL_HOST,
-    port: parseInt(process.env.MYSQL_DOCKER_PORT || "3306"),
+    port: parseInt(process.env.MYSQL_PORT || "3306"),
     password: process.env.MYSQL_PASSWORD,
     user: process.env.MYSQL_USER,
     database: process.env.MYSQL_DATABASE,
