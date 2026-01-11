@@ -4,7 +4,7 @@ services:
     container_name: mysql_production
     restart: unless-stopped
     ports:
-      - "${MYSQL_PORT}:3306"
+      - "${MYSQL_PORT}:${MYSQL_PORT}"
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
