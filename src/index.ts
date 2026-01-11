@@ -34,6 +34,9 @@ async function startServer() {
   try {
     // Connect to MySQL database
     const connectSuccess = prismaConnectDB();
+    const hasEnv = !!process.env.MYSQL_PASSWORD;
+    console.log(hasEnv ? "Has env" : "Not found env");
+
     if (!connectSuccess) {
       throw new Error("Database connect failed!");
     }
