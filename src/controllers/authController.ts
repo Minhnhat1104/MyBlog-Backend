@@ -11,6 +11,9 @@ import { BCRYPT_ROUNDS } from "@/config/constants";
 const refreshTokens: string[] = [];
 
 const authController = {
+  testPing: async (req: Request, res: Response, next: NextFunction) => {
+    res.status(200).json({ msg: "Ping successfully!" });
+  },
   registerUser: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const hash = bcrypt.hashSync(req.body.password, BCRYPT_ROUNDS);
