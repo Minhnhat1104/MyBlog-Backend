@@ -1,0 +1,13 @@
+# Docker instruction
+
+1. Check image
+   docker images
+2. build production image from Dockerfile
+   docker build -f Dockerfile.production -t minhnhat1104/backend:1.0 .
+3. push image
+   docker push minhnhat1104/backend:1.0
+
+# Run Docker on server
+
+1. Change image of backend service in docker/-compose.prod.yml to: minhnhat1104/backend:1.0
+2. npm run docker: production
