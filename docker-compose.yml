@@ -42,8 +42,10 @@ services:
 
     volumes:
       - ./:/app # 2-way bind with folder /app in Container
+      - upload:/app/src/upload
       - /app/node_modules # anonymous volume, ko bind mount với máy thực
     command: sh -c "npx prisma migrate dev --name init && npm run dev" # create a shell and run command
 
 volumes:
   mysql_data: # declare Docker volume (1 folder)
+  upload: # declare Docker volume (1 folder)
