@@ -23,7 +23,7 @@ services:
       timeout: 10s
 
   backend:
-    image: backend:dev
+    image: minhnhat1104/backend:dev
     container_name: backend_dev
     build:
       context: ./
