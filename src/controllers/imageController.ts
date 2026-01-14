@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import { prisma } from "@/config/prisma.config";
 import { Image } from "generated/prisma/client";
-import { getImageSize } from "@/tools/image";
+import { cacheDir, getImageSize } from "@/tools/image";
 import path from "path";
 import { errorToString } from "@/tools/error";
 import fs from "fs";
+import sharp from "sharp";
 const imageController = {
   uploadImage: async (req: Request, res: Response) => {
     try {
@@ -158,6 +159,8 @@ const imageController = {
   getStatisImage: async (req: Request, res: Response) => {
     try {
       const imageId = parseInt(req?.params?.id || "");
+      const width = Number(req?.query?.width);
+      const height = Number(req?.query?.height);
       const origin = req?.query?.origin === "true";
 
       if (!imageId) {
@@ -176,11 +179,45 @@ const imageController = {
 
       const imagePath = origin ? image?.path : image?.editedPath || image?.path;
 
+      if (width && height) {
+        const cachePath = path.join(
+          cacheDir,
+          `${imageId}_${width}x${height}.webp`
+        );
+        if (fs.existsSync(cachePath)) {
+          // use cache file
+          return fs.createReadStream(cachePath).pipe(res);
+        } else {
+          await sharp(imagePath)
+            .resize(width, height, {
+              fit: "fill",
+            })
+            .webp({ quality: 90 })
+            .toFile(cachePath);
+          return fs.createReadStream(cachePath).pipe(res);
+        }
+      }
+
+      if (width) {
+        const cachePath = path.join(cacheDir, `${imageId}_${width}.webp`);
+        if (fs.existsSync(cachePath)) {
+          return fs.createReadStream(cachePath).pipe(res);
+        } else {
+          await sharp(imagePath)
+            .resize(width)
+            .webp({ quality: 90 })
+            .toFile(cachePath); // height auto
+          return fs.createReadStream(cachePath).pipe(res);
+        }
+      }
+
       if (!fs.existsSync(imagePath)) {
         throw new Error("Image file is not existed!");
       }
 
-      res.sendFile(imagePath);
+      const cachePath = path.join(cacheDir, `${imageId}.webp`);
+      await sharp(imagePath).webp({ quality: 90 }).toFile(cachePath); // height auto
+      return fs.createReadStream(cachePath).pipe(res);
     } catch (err) {
       res.status(400).json({ msg: errorToString(err) });
     }

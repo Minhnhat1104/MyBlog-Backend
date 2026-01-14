@@ -11,6 +11,11 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
+export const cacheDir = path.join(process.cwd(), "src", "cache");
+if (!fs.existsSync(cacheDir)) {
+  fs.mkdirSync(cacheDir, { recursive: true });
+}
+
 const storage = multer.diskStorage({
   destination(req, file, callback) {
     const folderDir = path.join(uploadDir, dayjs()?.format("YYYY_MM_DD"));

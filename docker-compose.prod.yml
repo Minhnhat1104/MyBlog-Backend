@@ -37,6 +37,7 @@ services:
       - ./.env
     volumes:
       - upload:/app/src/upload
+      - cache:/app/src/cache
     depends_on:
       mysql: # quyết định thứ tự start container
         condition: service_healthy
