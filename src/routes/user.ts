@@ -1,5 +1,5 @@
 import express from "express";
-import middlewareController from "@/controllers/middlewareController.ts";
+import middlewareController from "@/middlewares/middlewareController";
 import { upload } from "@/tools/image";
 import userController from "@/controllers/userController";
 

@@ -1,6 +1,6 @@
 import express from "express";
 import { albumController } from "@/controllers/albumController.ts";
-import middlewareController from "@/controllers/middlewareController.ts";
+import middlewareController from "@/middlewares/middlewareController";
 import { upload } from "@/tools/image";
 
 const albumRouter = express.Router();

@@ -9,7 +9,8 @@ import "dotenv/config";
 import { prismaConnectDB } from "./config/prisma.config";
 import albumRouter from "./routes/album";
 import userRouter from "./routes/user";
-import middlewareController from "./controllers/middlewareController";
+import middlewareController from "./middlewares/middlewareController";
+import { i18nMiddleware } from "./middlewares/i18nMiddleware";
 
 dotenv.config();
 const app = express();
@@ -23,6 +24,7 @@ app.use(
 );
 app.use(cookieParser());
 app.use(express.json());
+app.use(i18nMiddleware);
 
 //routes
 app.use("/v1/auth", authRouter);

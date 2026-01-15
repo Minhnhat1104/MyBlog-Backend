@@ -1,6 +1,6 @@
 import express from "express";
 import authController from "@/controllers/authController.ts";
-import middlewareController from "@/controllers/middlewareController.ts";
+import middlewareController from "@/middlewares/middlewareController";
 
 const router = express.Router();
 router.get("/test", authController.testPing);
