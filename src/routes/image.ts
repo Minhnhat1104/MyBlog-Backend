@@ -1,52 +1,52 @@
 import express from "express";
 import imageController from "@/controllers/imageController.ts";
-import middlewareController from "@/middlewares/middlewareController";
+import authMiddleware from "@/middlewares/authMiddleware";
 import { upload } from "@/tools/image";
 
 const router = express.Router();
 
-router.get("/", middlewareController.verifyToken, imageController.getAllImage);
+router.get("/", authMiddleware.verifyToken, imageController.getAllImage);
 router.get("/file/:id", imageController.getStatisImage);
 
 router.get(
   "/:id",
-  middlewareController.verifyToken,
+  authMiddleware.verifyToken,
   imageController.getImageById
 );
 
 router.patch(
   "/update/:id",
-  middlewareController.verifyToken,
+  authMiddleware.verifyToken,
   imageController.updateImage
 );
 router.post(
   "/upload",
-  middlewareController.verifyToken,
+  authMiddleware.verifyToken,
   upload.single("imageFile"),
   imageController.uploadImage
 );
 router.delete(
   "/delete/:id",
-  middlewareController.verifyToken,
+  authMiddleware.verifyToken,
   imageController.deleteImage
 );
 
 router.post(
   "/favorite",
-  middlewareController.verifyToken,
+  authMiddleware.verifyToken,
   imageController.setFavoriteImage
 );
 
 router.post(
   "/edit",
-  middlewareController.verifyToken,
+  authMiddleware.verifyToken,
   upload.single("photo"),
   imageController.setEditImage
 );
 
 router.post(
   "/reset",
-  middlewareController.verifyToken,
+  authMiddleware.verifyToken,
   imageController.resetToOriginImage
 );
 

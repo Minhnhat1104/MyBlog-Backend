@@ -1,5 +1,5 @@
 import express from "express";
-import middlewareController from "@/middlewares/middlewareController";
+import authMiddleware from "@/middlewares/authMiddleware";
 import { upload } from "@/tools/image";
 import userController from "@/controllers/userController";
 
@@ -8,18 +8,18 @@ const userRouter = express.Router();
 userRouter.get("/avatar", userController.getAvatar); // img tag cannot add accessToken to request header
 userRouter.post(
   "/avatar",
-  middlewareController.verifyToken,
+  authMiddleware.verifyToken,
   upload.single("photo"),
   userController.updateAvatar
 );
 userRouter.post(
   "/profile",
-  middlewareController.verifyToken,
+  authMiddleware.verifyToken,
   userController.updateProfile
 );
 userRouter.post(
   "/change-password",
-  middlewareController.verifyToken,
+  authMiddleware.verifyToken,
   userController.changePassword
 );
 

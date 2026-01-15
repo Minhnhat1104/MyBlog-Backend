@@ -18,7 +18,7 @@
     "docker:build-dev": "docker compose build backend",
     "docker:build-production": "docker compose -f docker-compose.prod.yml build backend",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "test:typescript": "tsc --noEmit"
+    "test:typescript": "npx tsc --noEmit"
   },
   "author": "minhnhat",
   "license": "ISC",

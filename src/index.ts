@@ -9,7 +9,6 @@ import "dotenv/config";
 import { prismaConnectDB } from "./config/prisma.config";
 import albumRouter from "./routes/album";
 import userRouter from "./routes/user";
-import middlewareController from "./middlewares/middlewareController";
 import { i18nMiddleware } from "./middlewares/i18nMiddleware";
 
 dotenv.config();

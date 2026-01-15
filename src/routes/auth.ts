@@ -1,6 +1,6 @@
 import express from "express";
 import authController from "@/controllers/authController.ts";
-import middlewareController from "@/middlewares/middlewareController";
+import authMiddleware from "@/middlewares/authMiddleware";
 
 const router = express.Router();
 router.get("/test", authController.testPing);
@@ -11,7 +11,7 @@ router.post("/forgot-password", authController.sendResetPasswordEmail);
 router.post("/reset-password", authController.resetPassword);
 router.post(
   "/logout",
-  middlewareController.verifyToken,
+  authMiddleware.verifyToken,
   authController.logoutUser
 );
 

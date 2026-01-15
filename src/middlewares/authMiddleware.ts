@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
-const middlewareController = {
+const authMiddleware = {
   verifyToken: (req: Request, res: Response, next: NextFunction) => {
     try {
       const token =
@@ -46,7 +46,7 @@ const middlewareController = {
     res: Response,
     next: NextFunction
   ) => {
-    middlewareController.verifyToken(req, res, () => {
+    authMiddleware.verifyToken(req, res, () => {
       try {
         if (!req?.user?.admin) {
           return res.status(401).json({
@@ -61,4 +61,4 @@ const middlewareController = {
   },
 };
 
-export default middlewareController;
+export default authMiddleware;
