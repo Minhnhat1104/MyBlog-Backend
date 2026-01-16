@@ -36,7 +36,14 @@ app.use("/v1/album", albumRouter);
 // Error handler (use func with 4 params)
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
   console.log(err);
-  logger.error("Internal error", err);
+  logger.error("Internal error", {
+    method: req?.method,
+    URL: req?.url,
+    query: req?.query,
+    params: req?.params,
+    body: req?.body,
+    err,
+  });
   res.status(500).json({ message: "Internal Server Error" });
 });
 
