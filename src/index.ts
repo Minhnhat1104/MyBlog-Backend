@@ -10,6 +10,8 @@ import { prismaConnectDB } from "./config/prisma.config";
 import albumRouter from "./routes/album";
 import userRouter from "./routes/user";
 import { i18nMiddleware } from "./middlewares/i18nMiddleware";
+import { Request, Response, NextFunction } from "express";
+import { logger } from "./tools/logger";
 
 dotenv.config();
 const app = express();
@@ -30,6 +32,13 @@ app.use("/v1/auth", authRouter);
 app.use("/v1/user", userRouter);
 app.use("/v1/image", imageRouter);
 app.use("/v1/album", albumRouter);
+
+// Error handler (use func with 4 params)
+app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
+  console.log(err);
+  logger.error("Internal error", err);
+  res.status(500).json({ message: "Internal Server Error" });
+});
 
 async function startServer() {
   try {
