@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import path from "path";
 import fs from "fs";
 import sharp from "sharp";
+import crypto from "crypto";
 
 // const storage = getStorage();
 const uploadDir = path.join(process.cwd(), "src", "uploads");
@@ -43,4 +44,47 @@ export async function getImageSize(filePath: string) {
     width: metadata.width,
     height: metadata.height,
   };
+}
+
+// compress	Tự động nén ảnh
+// format	Tự chọn format tối ưu (webp / avif / jpeg)
+// enhance	Tăng nhẹ độ nét / contrast
+// strip	Xóa metadata (EXIF, ICC dư thừa)
+
+export enum ImageAuto {
+  compress = "compress",
+  format = "format",
+  enhance = "enhance",
+  metaData = "metaData",
+}
+
+export enum ImageColorSpave {
+  tinysrgb = "tinysrgb",
+  srgb = "srgb",
+}
+
+export function isInEnum<T extends Record<string, string>>(
+  value: unknown,
+  enumObject: T
+): value is T[keyof T] {
+  return Object.values(enumObject).includes(value as T[keyof T]);
+}
+
+export interface ImageFilter {
+  w?: number;
+  h?: number;
+  quality?: number;
+  auto?: ImageAuto[];
+  colorSpace?: "tinysrgb" | "srgb";
+}
+
+export function getCacheFileName(imageId: number, filter: ImageFilter) {
+  const normalized = {
+    id: imageId,
+    ...filter,
+  };
+
+  const rawKey = JSON.stringify(normalized);
+
+  return crypto.createHash("sha1").update(rawKey).digest("hex");
 }

@@ -1,7 +1,15 @@
 import { Request, Response } from "express";
 import { prisma } from "@/config/prisma.config";
 import { Image } from "generated/prisma/client";
-import { cacheDir, getImageSize } from "@/tools/image";
+import {
+  cacheDir,
+  getCacheFileName,
+  getImageSize,
+  ImageAuto,
+  ImageColorSpave,
+  ImageFilter,
+  isInEnum,
+} from "@/tools/image";
 import path from "path";
 import { errorToString } from "@/tools/error";
 import fs from "fs";
@@ -159,9 +167,25 @@ const imageController = {
   getStatisImage: async (req: Request, res: Response) => {
     try {
       const imageId = parseInt(req?.params?.id || "");
-      const width = Number(req?.query?.width);
-      const height = Number(req?.query?.height);
       const origin = req?.query?.origin === "true";
+      const autos = req?.query?.auto;
+
+      const imageFilter: ImageFilter = {
+        w: Number(req?.query?.width),
+        h: Number(req?.query?.height),
+        quality: Number(req?.query?.q),
+        colorSpace: isInEnum(req?.query?.cs, ImageColorSpave)
+          ? req?.query?.cs
+          : undefined,
+      };
+
+      if (Array.isArray(autos)) {
+        autos?.forEach((_item) => {
+          if (isInEnum(_item, ImageAuto)) {
+            imageFilter.auto?.push(_item);
+          }
+        });
+      }
 
       if (!imageId) {
         throw new Error("Id not found!");
@@ -179,44 +203,55 @@ const imageController = {
 
       const imagePath = origin ? image?.path : image?.editedPath || image?.path;
 
-      if (width && height) {
-        const cachePath = path.join(
-          cacheDir,
-          `${imageId}_${width}x${height}.webp`
-        );
-        if (fs.existsSync(cachePath)) {
-          // use cache file
-          return fs.createReadStream(cachePath).pipe(res);
-        } else {
-          await sharp(imagePath)
-            .resize(width, height, {
-              fit: "fill",
+      const cachePath = path.join(
+        cacheDir,
+        getCacheFileName(image?.id, imageFilter)
+      );
+      if (fs.existsSync(cachePath)) {
+        // use cache file
+        return fs.createReadStream(cachePath).pipe(res);
+      } else {
+        let instance = sharp(imagePath);
+
+        if (imageFilter?.w || imageFilter?.h) {
+          instance = instance?.resize(imageFilter?.w, imageFilter?.h, {
+            fit: "fill",
+          });
+        }
+
+        if (imageFilter?.auto?.includes(ImageAuto.compress)) {
+          instance = instance.jpeg({ quality: 80 });
+        }
+
+        if (imageFilter?.auto?.includes(ImageAuto.format)) {
+          instance = instance.toFormat("webp");
+        }
+
+        if (imageFilter?.auto?.includes(ImageAuto.enhance)) {
+          instance = instance
+            .modulate({
+              brightness: 1.03,
+              saturation: 1.05,
             })
-            .webp({ quality: 90 })
-            .toFile(cachePath);
-          return fs.createReadStream(cachePath).pipe(res);
+            .sharpen(0.3)
+            .gamma(1.02);
         }
+
+        if (imageFilter?.auto?.includes(ImageAuto.metaData)) {
+          instance = instance.withMetadata();
+        }
+
+        if (imageFilter?.colorSpace) {
+          instance = instance?.toColorspace(imageFilter?.colorSpace);
+        }
+
+        await instance?.toFile(cachePath);
       }
 
-      if (width) {
-        const cachePath = path.join(cacheDir, `${imageId}_${width}.webp`);
-        if (fs.existsSync(cachePath)) {
-          return fs.createReadStream(cachePath).pipe(res);
-        } else {
-          await sharp(imagePath)
-            .resize(width)
-            .webp({ quality: 90 })
-            .toFile(cachePath); // height auto
-          return fs.createReadStream(cachePath).pipe(res);
-        }
-      }
-
-      if (!fs.existsSync(imagePath)) {
+      if (!fs.existsSync(cachePath)) {
         throw new Error("Image file is not existed!");
       }
 
-      const cachePath = path.join(cacheDir, `${imageId}.webp`);
-      await sharp(imagePath).webp({ quality: 90 }).toFile(cachePath); // height auto
       return fs.createReadStream(cachePath).pipe(res);
     } catch (err) {
       res.status(400).json({ msg: errorToString(err) });
