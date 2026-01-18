@@ -51,7 +51,7 @@ const authController = {
         id: user.id,
       },
       process.env.ACCESS_TOKEN_KEY || "",
-      { expiresIn: "15m" }
+      { expiresIn: "15m" },
     );
   },
 
@@ -66,7 +66,7 @@ const authController = {
         id: user.id,
       },
       process.env.REFRESH_TOKEN_KEY || "",
-      { expiresIn: "30d" }
+      { expiresIn: "30d" },
     );
   },
 
@@ -75,15 +75,18 @@ const authController = {
       const user = await prisma?.user.findFirst({
         where: {
           email: req.body.email || "",
+          password: {
+            not: null,
+          },
         },
       });
 
-      if (!user) {
+      if (!user || !user?.password) {
         return res.status(404).json({ msg: "Wrong email" });
       }
       const validPassword = await bcrypt.compareSync(
         req.body.password,
-        user.password
+        user.password,
       );
       // const validPassword = user.password === req.body.password;
       if (!validPassword) {
@@ -240,8 +243,32 @@ const authController = {
         res
           .status(200)
           .json({ rows: { ...nTokenPayload, accessToken: newAccessToken } });
-      }
+      },
     );
+  },
+
+  oauth2LoginCallback: async (req: Request, res: Response) => {
+    try {
+      const user = req.user as any;
+
+      const accessToken = jwt.sign(
+        { userId: user.id },
+        process.env.JWT_SECRET!,
+        { expiresIn: "15m" },
+      );
+
+      const refreshToken = jwt.sign(
+        { userId: user.id },
+        process.env.JWT_REFRESH_SECRET!,
+        { expiresIn: "7d" },
+      );
+
+      res.redirect(
+        `${process.env.CLIENT_URL}/oauth-success?accessToken=${accessToken}&refreshToken=${refreshToken}`,
+      );
+    } catch (err) {
+      res.status(400).json({ msg: errorToString(err) });
+    }
   },
 };
 

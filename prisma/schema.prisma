@@ -34,13 +34,18 @@ datasource db {
 // 3) Chạy chính xác những migration CHƯA chạy
 // 3) KHÔNG tạo migration mới, Không reset DB
 // 4) Không chạy Generate Prisma
+enum AuthProvider {
+  local
+  google
+  github
+}
 
 model User {
   id                     Int                   @id @default(autoincrement())
   last_name              String                @default("")
   first_name             String                @default("")
-  email                  String                @unique
-  password               String
+  email                  String?               @unique
+  password               String?
   admin                  Boolean
   avatar_id              Int?                  @unique
   avatar                 Image?                @relation("UserAvatar", fields: [avatar_id], references: [id])
@@ -49,6 +54,8 @@ model User {
   password_reset_token   String?               @unique
   password_reset_expired DateTime?
   favorite_images        User_Image_Favotire[]
+  provider               AuthProvider          @default(local)
+  provider_id            String?               @unique
   created_at             DateTime              @default(now())
   updated_at             DateTime              @default(now()) @updatedAt
 }
