@@ -50,3 +50,4 @@ services:
 volumes:
   mysql_data: # declare Docker volume (1 folder)
   upload: # declare Docker volume (1 folder)
+  cache:
