@@ -6,12 +6,13 @@ import path from "path";
 import fs, { lstat } from "fs";
 import { getImageSize } from "@/tools/image";
 import { BCRYPT_ROUNDS } from "@/config/constants";
+import { AuthProvider } from "generated/prisma/enums";
 
 const userAvatarPlaceholder = path.join(
   process.cwd(),
   "src",
   "assets",
-  "UserPlaceholder.png"
+  "UserPlaceholder.png",
 );
 
 const userController = {
@@ -136,13 +137,17 @@ const userController = {
         },
       });
 
+      if (!result?.password || result?.provider !== AuthProvider.local) {
+        throw new Error("Invalid auth provider!");
+      }
+
       if (!result) {
         throw new Error("User not found");
       }
 
       const isOldPassCorrect = await bcrypt.compareSync(
         oldPassword,
-        result?.password
+        result?.password,
       );
 
       if (!isOldPassCorrect) {

@@ -1,12 +1,15 @@
-import express from "express";
+import express, { NextFunction } from "express";
 import authController from "@/controllers/authController.ts";
 import authMiddleware from "@/middlewares/authMiddleware";
-import passport from "passport";
-
+import passport from "@/config/googlePassport";
 const router = express.Router();
 
 router.get(
   "/google",
+  (req, res, next: NextFunction) => {
+    console.log("Google login");
+    next();
+  },
   passport.authenticate("google", {
     scope: ["profile", "email"],
   }),

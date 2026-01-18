@@ -21,7 +21,7 @@ app.use(
   cors({
     origin: ["http://localhost:5173", "https://drive.ravosoft.com"],
     credentials: true,
-  })
+  }),
 );
 app.use(cookieParser());
 app.use(express.json());
@@ -64,7 +64,7 @@ async function startServer() {
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
       console.log(
-        `API documentation available at http://localhost:${PORT}/api-docs`
+        `API documentation available at http://localhost:${PORT}/api-docs`,
       );
     });
   } catch (error) {
