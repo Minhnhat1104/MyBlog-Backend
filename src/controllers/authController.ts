@@ -6,7 +6,7 @@ import { errorToString } from "@/tools/error";
 import crypto from "crypto";
 import dayjs from "dayjs";
 import { User } from "generated/prisma/client";
-import { BCRYPT_ROUNDS } from "@/config/constants";
+import { BCRYPT_ROUNDS, FE_URL } from "@/config/constants";
 
 const refreshTokens: string[] = [];
 
@@ -104,9 +104,9 @@ const authController = {
       refreshTokens.push(refreshToken);
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: false,
+        secure: true,
         path: "/",
-        sameSite: "strict",
+        sameSite: "none",
       });
 
       res
@@ -236,9 +236,9 @@ const authController = {
         refreshTokens.push(newRefreshToken);
         res.cookie("refreshToken", newRefreshToken, {
           httpOnly: true,
-          secure: false,
+          secure: true,
           path: "/",
-          sameSite: "strict",
+          sameSite: "none",
         });
         res
           .status(200)
@@ -249,23 +249,19 @@ const authController = {
 
   oauth2LoginCallback: async (req: Request, res: Response) => {
     try {
-      const user = req.user as any;
+      const tokenPayload = req.user as any;
 
-      const accessToken = jwt.sign(
-        { userId: user.id },
-        process.env.JWT_SECRET!,
-        { expiresIn: "15m" },
-      );
+      const accessToken = authController.generateAccessToken(tokenPayload);
+      const refreshToken = authController.generateRefreshToken(tokenPayload);
+      refreshTokens.push(refreshToken);
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        path: "/",
+        sameSite: "none",
+      });
 
-      const refreshToken = jwt.sign(
-        { userId: user.id },
-        process.env.JWT_REFRESH_SECRET!,
-        { expiresIn: "7d" },
-      );
-
-      res.redirect(
-        `${process.env.CLIENT_URL}/oauth-success?accessToken=${accessToken}&refreshToken=${refreshToken}`,
-      );
+      res.redirect(`${FE_URL}/oauth2-fallback`);
     } catch (err) {
       res.status(400).json({ msg: errorToString(err) });
     }

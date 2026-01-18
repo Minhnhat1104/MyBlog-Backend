@@ -15,6 +15,7 @@ import { logger } from "./tools/logger";
 
 dotenv.config();
 const app = express();
+app.set("trust proxy", true);
 
 app.use(express.static("public"));
 app.use(

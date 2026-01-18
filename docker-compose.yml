@@ -45,7 +45,7 @@ services:
       - upload:/app/src/upload
       - cache:/app/src/cache
       - /app/node_modules # anonymous volume, ko bind mount với máy thực
-    command: sh -c "npx prisma migrate dev --name init && npm run dev" # create a shell and run command
+    command: sh -c "npx prisma migrate dev --name init && npx prisma generate && npm run dev" # create a shell and run command
 
 volumes:
   mysql_data: # declare Docker volume (1 folder)

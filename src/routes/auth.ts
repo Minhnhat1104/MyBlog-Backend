@@ -6,15 +6,19 @@ const router = express.Router();
 
 router.get(
   "/google",
-  (req, res, next: NextFunction) => {
-    console.log("Google login");
-    next();
-  },
   passport.authenticate("google", {
     scope: ["profile", "email"],
+    session: false,
   }),
 );
-router.get("/google/callback", passport.authenticate("google"));
+router.get(
+  "/google/callback",
+  passport.authenticate("google", {
+    session: false,
+    failureRedirect: "/login",
+  }),
+  authController.oauth2LoginCallback,
+);
 
 router.get("/test", authController.testPing);
 router.post("/register", authController.registerUser);

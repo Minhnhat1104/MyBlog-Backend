@@ -31,14 +31,14 @@ const storage = multer.diskStorage({
     //  1704883205123_ax91j2.jpg
     callback(
       null,
-      `${Date.now()}_${Math.random().toString(36).slice(2)}${ext}`
+      `${Date.now()}_${Math.random().toString(36).slice(2)}${ext}`,
     );
   },
 });
 
 export const upload = multer({ storage: storage });
 
-export async function getImageSize(filePath: string) {
+export async function getImageSize(filePath: string | Buffer<ArrayBuffer>) {
   const metadata = await sharp(filePath).metadata();
   return {
     width: metadata.width,
@@ -65,7 +65,7 @@ export enum ImageColorSpave {
 
 export function isInEnum<T extends Record<string, string>>(
   value: unknown,
-  enumObject: T
+  enumObject: T,
 ): value is T[keyof T] {
   return Object.values(enumObject).includes(value as T[keyof T]);
 }
