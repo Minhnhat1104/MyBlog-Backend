@@ -79,6 +79,10 @@ const authController = {
             not: null,
           },
         },
+        omit: {
+          password_reset_expired: true,
+          password_reset_token: true,
+        },
       });
 
       if (!user || !user?.password) {
@@ -93,12 +97,7 @@ const authController = {
         return res.status(404).json({ msg: "Wrong password" });
       }
 
-      const {
-        password: temp,
-        password_reset_expired,
-        password_reset_token,
-        ...tokenPayload
-      } = user;
+      const { password: temp, ...tokenPayload } = user;
       const accessToken = authController.generateAccessToken(tokenPayload);
       const refreshToken = authController.generateRefreshToken(tokenPayload);
       refreshTokens.push(refreshToken);
