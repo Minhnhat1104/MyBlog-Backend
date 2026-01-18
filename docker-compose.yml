@@ -43,7 +43,7 @@ services:
     volumes:
       - ./:/app # 2-way bind with folder /app in Container
       - upload:/app/src/upload
-      - cache:/app/src/cache
+      # - cache:/app/src/cache # remove bind for debug in dev mode
       - /app/node_modules # anonymous volume, ko bind mount với máy thực
     command: sh -c "npx prisma migrate dev --name init && npx prisma generate && npm run dev" # create a shell and run command
 

@@ -6,7 +6,7 @@ import {
   getCacheFileName,
   getImageSize,
   ImageAuto,
-  ImageColorSpave,
+  ImageColorSpace,
   ImageFilter,
   isInEnum,
 } from "@/tools/image";
@@ -168,19 +168,20 @@ const imageController = {
     try {
       const imageId = parseInt(req?.params?.id || "");
       const origin = req?.query?.origin === "true";
-      const autos = req?.query?.auto;
+      const auto = req?.query?.auto;
 
       const imageFilter: ImageFilter = {
-        w: Number(req?.query?.width),
-        h: Number(req?.query?.height),
-        quality: Number(req?.query?.q),
-        colorSpace: isInEnum(req?.query?.cs, ImageColorSpave)
+        w: Number(req?.query?.width) || undefined,
+        h: Number(req?.query?.height) || undefined,
+        quality: Number(req?.query?.q) || undefined,
+        colorSpace: isInEnum(req?.query?.cs, ImageColorSpace)
           ? req?.query?.cs
           : undefined,
+        auto: [],
       };
 
-      if (Array.isArray(autos)) {
-        autos?.forEach((_item) => {
+      if (Array.isArray(auto)) {
+        auto?.forEach((_item) => {
           if (isInEnum(_item, ImageAuto)) {
             imageFilter.auto?.push(_item);
           }
@@ -205,8 +206,9 @@ const imageController = {
 
       const cachePath = path.join(
         cacheDir,
-        getCacheFileName(image?.id, imageFilter)
+        getCacheFileName(image?.id, imageFilter),
       );
+
       if (fs.existsSync(cachePath)) {
         // use cache file
         return fs.createReadStream(cachePath).pipe(res);
@@ -215,12 +217,20 @@ const imageController = {
 
         if (imageFilter?.w || imageFilter?.h) {
           instance = instance?.resize(imageFilter?.w, imageFilter?.h, {
-            fit: "fill",
+            fit: "inside",
+            withoutEnlargement: true,
           });
         }
 
         if (imageFilter?.auto?.includes(ImageAuto.compress)) {
-          instance = instance.jpeg({ quality: 80 });
+          const megapixels = (image?.width * image?.height) / 1_000_000;
+          let quality = 85;
+
+          if (megapixels > 16) quality = 60;
+          else if (megapixels > 8) quality = 70;
+          else if (megapixels > 2) quality = 80;
+
+          instance = instance.jpeg({ quality: quality });
         }
 
         if (imageFilter?.auto?.includes(ImageAuto.format)) {

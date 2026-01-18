@@ -58,7 +58,7 @@ export enum ImageAuto {
   metaData = "metaData",
 }
 
-export enum ImageColorSpave {
+export enum ImageColorSpace {
   tinysrgb = "tinysrgb",
   srgb = "srgb",
 }
