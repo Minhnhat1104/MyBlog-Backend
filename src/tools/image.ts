@@ -22,7 +22,13 @@ if (!fs.existsSync(cacheDir)) {
   fs.mkdirSync(cacheDir, { recursive: true });
 }
 
-const storage = multer.diskStorage({
+//  1704883205123_k8f3zq2.png
+//  1704883205123_ax91j2.jpg
+const getFilname = (ext: string) => {
+  return `${Date.now()}_${Math.random().toString(36).slice(2)}${ext}`;
+};
+
+const uploadStorage = multer.diskStorage({
   destination(req, file, callback) {
     const folderDir = path.join(uploadDir, dayjs()?.format("YYYY_MM_DD"));
     if (!fs.existsSync(folderDir)) {
@@ -32,16 +38,26 @@ const storage = multer.diskStorage({
   },
   filename(req, file, callback) {
     const ext = path.extname(file.originalname);
-    //  1704883205123_k8f3zq2.png
-    //  1704883205123_ax91j2.jpg
-    callback(
-      null,
-      `${Date.now()}_${Math.random().toString(36).slice(2)}${ext}`,
-    );
+    callback(null, getFilname(ext));
   },
 });
 
-export const upload = multer({ storage: storage });
+const avatarStorage = multer.diskStorage({
+  destination(req, file, callback) {
+    const folderDir = path.join(avatarDir, dayjs()?.format("YYYY_MM_DD"));
+    if (!fs.existsSync(folderDir)) {
+      fs.mkdirSync(folderDir, { recursive: true });
+    }
+    callback(null, folderDir);
+  },
+  filename(req, file, callback) {
+    const ext = path.extname(file.originalname);
+    callback(null, getFilname(ext));
+  },
+});
+
+export const upload = multer({ storage: uploadStorage });
+export const avatarUpload = multer({ storage: avatarStorage });
 
 export async function getImageSize(filePath: string | Buffer<ArrayBuffer>) {
   const metadata = await sharp(filePath).metadata();

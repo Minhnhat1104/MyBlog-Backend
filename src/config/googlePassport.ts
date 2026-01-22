@@ -84,15 +84,10 @@ passport.use(
             path: "",
           };
 
+          let avatarPath: string | undefined;
           if (avatar) {
             const localFile = await downloadGoogleAvatar(avatar);
-            const metaData = await getImageSize(localFile?.path);
-
-            imageCreate.width = metaData?.width || 0;
-            imageCreate.height = metaData?.height || 0;
-            imageCreate.ext = localFile?.ext || "";
-            imageCreate.name = localFile?.name || "";
-            imageCreate.path = localFile?.path || "";
+            avatarPath = localFile?.path;
           }
 
           const newUser = await prisma?.$transaction(async (tx) => {
@@ -103,6 +98,7 @@ passport.use(
                 email: profile.emails?.[0]?.value || "",
                 first_name: profile.name?.givenName || "",
                 last_name: profile.name?.familyName || "",
+                avatar: avatarPath,
                 admin: false,
                 ...(imageCreate?.path && {
                   images: {
@@ -119,30 +115,6 @@ passport.use(
                 password_reset_token: true,
               },
             });
-
-            if (imageCreate?.path) {
-              const updateResult = await tx.user.update({
-                where: {
-                  id: user?.id,
-                },
-                data: {
-                  avatar: {
-                    connect: {
-                      id: user?.images?.[0]?.id,
-                    },
-                  },
-                },
-                omit: {
-                  password: true,
-                  password_reset_expired: true,
-                  password_reset_token: true,
-                },
-              });
-
-              if (!updateResult) {
-                throw new Error("Update avatar failed!");
-              }
-            }
 
             return user;
           });

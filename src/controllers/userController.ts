@@ -30,20 +30,16 @@ const userController = {
         where: {
           id: userId,
         },
-        include: {
-          avatar: {
-            select: {
-              path: true,
-            },
-          },
+        select: {
+          avatar: true,
         },
       });
 
-      if (!result || !result?.avatar?.path) {
+      if (!result || !result?.avatar) {
         return res?.sendFile(userAvatarPlaceholder);
       }
 
-      res.sendFile(result?.avatar?.path || "");
+      res.sendFile(result?.avatar || "");
     } catch (err) {
       res.status(400).json({ msg: errorToString(err) });
     }
@@ -60,23 +56,12 @@ const userController = {
         throw new Error("Invalid request!");
       }
 
-      const { width, height } = await getImageSize(req?.file?.path);
-
       const result = await prisma?.user.update({
         where: {
           id: userId,
         },
         data: {
-          avatar: {
-            create: {
-              ext,
-              width: width || 0,
-              height: height || 0,
-              path: req?.file?.path || "",
-              name: req?.file?.originalname,
-              creator_id: userId,
-            },
-          },
+          avatar: req?.file?.path,
         },
       });
 

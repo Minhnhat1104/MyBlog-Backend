@@ -47,8 +47,7 @@ model User {
   email                  String?               @unique
   password               String?
   admin                  Boolean
-  avatar_id              Int?                  @unique
-  avatar                 Image?                @relation("UserAvatar", fields: [avatar_id], references: [id])
+  avatar                 String?
   images                 Image[]               @relation("UserImages")
   albums                 Album[]
   password_reset_token   String?               @unique
@@ -105,8 +104,6 @@ model Image {
   // album (1–n)
   album_id       Int?
   album_of       Album?                @relation(fields: [album_id], references: [id])
-  // avatar (1–1)
-  avatar_of      User?                 @relation("UserAvatar")
   // images (1–n)
   creator        User                  @relation("UserImages", fields: [creator_id], references: [id])
   creator_id     Int

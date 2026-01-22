@@ -1,6 +1,6 @@
 import express from "express";
 import authMiddleware from "@/middlewares/authMiddleware";
-import { upload } from "@/tools/image";
+import { avatarUpload } from "@/tools/image";
 import userController from "@/controllers/userController";
 
 const userRouter = express.Router();
@@ -9,18 +9,18 @@ userRouter.get("/avatar", userController.getAvatar); // img tag cannot add acces
 userRouter.post(
   "/avatar",
   authMiddleware.verifyToken,
-  upload.single("photo"),
-  userController.updateAvatar
+  avatarUpload.single("photo"),
+  userController.updateAvatar,
 );
 userRouter.post(
   "/profile",
   authMiddleware.verifyToken,
-  userController.updateProfile
+  userController.updateProfile,
 );
 userRouter.post(
   "/change-password",
   authMiddleware.verifyToken,
-  userController.changePassword
+  userController.changePassword,
 );
 
 export default userRouter;
