@@ -2,4 +2,6 @@ node_modules/
 .env
 /generated/prisma
 src/uploads
+src/avatars
+src/cache
 built
