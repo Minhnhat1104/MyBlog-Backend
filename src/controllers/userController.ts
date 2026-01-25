@@ -24,8 +24,6 @@ const userController = {
         throw new Error("Invalid request!");
       }
 
-      console.log(fs.existsSync(userAvatarPlaceholder));
-
       const result = await prisma?.user.findUnique({
         where: {
           id: userId,
@@ -40,6 +38,29 @@ const userController = {
       }
 
       res.sendFile(result?.avatar || "");
+    } catch (err) {
+      res.status(400).json({ msg: errorToString(err) });
+    }
+  },
+
+  deleteAvatar: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = Number(req?.user?.id || "");
+
+      if (!userId) {
+        throw new Error("Invalid request!");
+      }
+
+      const result = await prisma?.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          avatar: null,
+        },
+      });
+
+      res.status(200).json({ msg: "Delete data successfully!", result });
     } catch (err) {
       res.status(400).json({ msg: errorToString(err) });
     }

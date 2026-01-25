@@ -4,4 +4,5 @@ node_modules/
 src/uploads
 src/avatars
 src/cache
+src/logs
 built

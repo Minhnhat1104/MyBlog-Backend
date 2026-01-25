@@ -6,6 +6,11 @@ import userController from "@/controllers/userController";
 const userRouter = express.Router();
 
 userRouter.get("/avatar", userController.getAvatar); // img tag cannot add accessToken to request header
+userRouter.delete(
+  "/avatar",
+  authMiddleware.verifyToken,
+  userController.deleteAvatar,
+);
 userRouter.post(
   "/avatar",
   authMiddleware.verifyToken,
